@@ -1,0 +1,2 @@
+# Folder penyimpanan berkas lampiran Activity Vault untuk aplikasi TEMPO.
+# Berkas pribadi pengguna di folder ini secara otomatis diabaikan oleh .gitignore agar aman dan tidak bocor ke repositori GitHub.

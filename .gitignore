@@ -1,0 +1,32 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency directories
+node_modules/
+
+# Production build output
+dist/
+
+# User Private Data (Local-First Privacy)
+data/activities.json
+data/vault/*
+!data/vault/.gitkeep
+!data/activities.sample.json
+
+# Environment variables
+.env
+.env.local
+
+# OS Metadata
+.DS_Store
+Thumbs.db

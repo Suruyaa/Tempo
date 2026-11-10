@@ -1,0 +1,60 @@
+[
+  {
+    "id": "act-sample-1",
+    "title": "Riset Literatur & Pengumpulan Data Awal",
+    "description": "Kumpulkan bahan referensi jurnal dan rekap hasil wawancara narasumber.",
+    "category": "Kerja / Studi",
+    "priority": "normal",
+    "dueDate": "2026-11-09",
+    "dueTime": "17:00",
+    "status": "completed",
+    "reminderHorizon": ["h-3", "h-1", "h-0"],
+    "dependencies": [],
+    "vault": {
+      "links": [
+        { "title": "Folder Google Drive Dokumen", "url": "https://drive.google.com" }
+      ],
+      "files": []
+    },
+    "createdAt": "2026-11-05T09:00:00.000Z",
+    "completedAt": "2026-11-09T16:45:00.000Z"
+  },
+  {
+    "id": "act-sample-2",
+    "title": "Penyusunan Draft Dokumen & Review Tim",
+    "description": "Susun draft bab 1-3 dan diskusikan dengan tim untuk pengecekan data.",
+    "category": "Kerja / Studi",
+    "priority": "high",
+    "dueDate": "2026-11-11",
+    "dueTime": "15:00",
+    "status": "in_progress",
+    "reminderHorizon": ["h-2", "h-1", "h-0"],
+    "dependencies": ["act-sample-1"],
+    "vault": {
+      "links": [
+        { "title": "Draft Dokumen Online", "url": "https://docs.google.com" }
+      ],
+      "files": []
+    },
+    "createdAt": "2026-11-06T10:00:00.000Z"
+  },
+  {
+    "id": "act-sample-3",
+    "title": "Finalisasi & Penyerahan Berkas Utama",
+    "description": "Export ke format final PDF, lampirkan bukti pengesahan, dan kirimkan via portal resmi.",
+    "category": "Penting",
+    "priority": "urgent",
+    "dueDate": "2026-11-12",
+    "dueTime": "13:00",
+    "status": "pending",
+    "reminderHorizon": ["h-3", "h-2", "h-1", "h-0"],
+    "dependencies": ["act-sample-2"],
+    "vault": {
+      "links": [
+        { "title": "Portal Pengumpulan Dokumen", "url": "https://github.com" }
+      ],
+      "files": []
+    },
+    "createdAt": "2026-11-07T11:00:00.000Z"
+  }
+]

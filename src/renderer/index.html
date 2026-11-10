@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>TEMPO - Desktop Productivity Engine</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Header Navigation -->
+    <header class="app-header">
+      <div class="header-brand">
+        <span class="brand-icon">⚡</span>
+        <div class="brand-text">
+          <h1>TEMPO</h1>
+          <span class="brand-tagline">Productivity Engine</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs">
+        <button class="nav-tab active" data-tab="agenda">
+          <span class="tab-icon">📋</span> Agenda & H-x
+        </button>
+        <button class="nav-tab" data-tab="calendar">
+          <span class="tab-icon">🗓️</span> Kalender Libur
+        </button>
+        <button class="nav-tab" data-tab="nodegraph">
+          <span class="tab-icon">🕸️</span> Node Preview
+        </button>
+        <button class="nav-tab" data-tab="vault">
+          <span class="tab-icon">🗄️</span> Activity Vault
+        </button>
+      </nav>
+
+      <!-- Quick Action Buttons -->
+      <div class="header-actions">
+        <button id="btnTestAlert" class="btn btn-danger-glow" title="Uji Coba Notifikasi Paksa yang Menembus Do Not Disturb">
+          🚨 Tes Notifikasi Paksa
+        </button>
+        <button id="btnToggleMini" class="btn btn-secondary" title="Sembunyikan / Tampilkan Mini Floating HUD">
+          📌 Mini HUD
+        </button>
+        <button id="btnMobileSync" class="btn btn-primary" title="Buka Dashboard dari HP via Wi-Fi">
+          📱 Sambungkan HP
+        </button>
+        <button id="btnExportICS" class="btn btn-outline" title="Download Jadwal Format .ICS untuk Kalender HP">
+          📅 Ekspor .ICS
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Dynamic Content Workspace -->
+    <main class="app-main">
+      <!-- 1. TAB: AGENDA VIEW -->
+      <section id="tab-agenda" class="tab-pane active">
+        <!-- Rendered by agendaView.js -->
+      </section>
+
+      <!-- 2. TAB: CALENDAR VIEW -->
+      <section id="tab-calendar" class="tab-pane">
+        <!-- Rendered by calendarView.js -->
+      </section>
+
+      <!-- 3. TAB: NODE PREVIEW VIEW -->
+      <section id="tab-nodegraph" class="tab-pane">
+        <!-- Rendered by nodeGraph.js -->
+      </section>
+
+      <!-- 4. TAB: VAULT VIEW -->
+      <section id="tab-vault" class="tab-pane">
+        <!-- Rendered by vaultView.js -->
+      </section>
+    </main>
+
+    <!-- Modal Form Tambah Agenda -->
+    <div id="modalAddActivity" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2>➕ Catat Agenda & Deadline Baru</h2>
+          <button class="btn-close-modal" id="btnCloseModalAdd">&times;</button>
+        </div>
+        <form id="formAddActivity" class="modal-form">
+          <div class="form-group">
+            <label for="inputTitle">Nama Agenda / Tugas <span class="required">*</span></label>
+            <input type="text" id="inputTitle" placeholder="Contoh: Submit Revisi Proposal Klien" required>
+          </div>
+
+          <div class="form-group">
+            <label for="inputDesc">Catatan / Deskripsi Instruksi</label>
+            <textarea id="inputDesc" rows="3" placeholder="Rincian berkas atau checklist yang harus diselesaikan..."></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-2">
+              <label for="inputDueDate">Tanggal Tenggat (Deadline) <span class="required">*</span></label>
+              <input type="date" id="inputDueDate" required>
+            </div>
+            <div class="form-group flex-1">
+              <label for="inputDueTime">Waktu</label>
+              <input type="time" id="inputDueTime" value="15:00">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="selectPriority">Skala Prioritas</label>
+              <select id="selectPriority">
+                <option value="normal">Normal (Biasa)</option>
+                <option value="high">Tinggi (High Priority)</option>
+                <option value="urgent">Mendesak / Kritis (Bypass DND Aggressive)</option>
+              </select>
+            </div>
+            <div class="form-group flex-1">
+              <label for="inputCategory">Kategori / Tag</label>
+              <input type="text" id="inputCategory" placeholder="Kerja, Kuliah, Pribadi..." value="Kerja">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Interval Notifikasi Bertingkat (Horizon Warning)</label>
+            <div class="checkbox-horizon-group">
+              <label><input type="checkbox" name="horizon" value="h-7"> H-7 (1 Minggu)</label>
+              <label><input type="checkbox" name="horizon" value="h-3" checked> H-3</label>
+              <label><input type="checkbox" name="horizon" value="h-2" checked> H-2</label>
+              <label><input type="checkbox" name="horizon" value="h-1" checked> H-1</label>
+              <label><input type="checkbox" name="horizon" value="h-0" checked> Hari H</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="selectDependency">Prasyarat Tugas (Kesinambungan Node)</label>
+            <select id="selectDependency" multiple size="3" title="Tahan Ctrl untuk memilih lebih dari satu prasyarat">
+              <!-- Opsi diisi otomatis dari daftar tugas yang ada -->
+            </select>
+            <small class="form-hint">Pilih tugas yang harus selesai lebih dulu sebelum tugas ini dikerjakan.</small>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" id="btnCancelAdd">Batal</button>
+            <button type="submit" class="btn btn-primary">Simpan Agenda</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Sambungkan HP (QR Code) -->
+    <div id="modalMobileSync" class="modal-backdrop hidden">
+      <div class="modal-card modal-qr">
+        <div class="modal-header">
+          <h2>📱 Sambungkan Smartphone</h2>
+          <button class="btn-close-modal" id="btnCloseModalQR">&times;</button>
+        </div>
+        <div class="modal-qr-body">
+          <p class="qr-instruction">
+            Pastikan HP dan laptop Anda berada dalam <strong>jaringan Wi-Fi yang sama</strong>. Pindai QR Code di bawah dengan kamera HP:
+          </p>
+          <div id="qrCodeContainer" class="qr-box">
+            <!-- QR code canvas / svg rendered by qrcodeModal.js -->
+          </div>
+          <div class="qr-url-box">
+            <span>Alamat Lokal:</span>
+            <input type="text" id="textCompanionURL" readonly value="Memuat...">
+            <button id="btnCopyURL" class="btn btn-secondary btn-sm">Salin</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="components/agendaView.js"></script>
+  <script src="components/calendarView.js"></script>
+  <script src="components/nodeGraph.js"></script>
+  <script src="components/vaultView.js"></script>
+  <script src="components/qrcodeModal.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>
