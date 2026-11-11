@@ -5,7 +5,7 @@
 # TEMPO
 ### Master your work tempo, never miss a deadline.
 
-*A local-first, high-performance desktop productivity engine featuring unmissable reminders that pierce through Windows Do Not Disturb, Obsidian-style force-directed graph view, markdown logbook journal, global quick scratchpad, and activity vault.*
+*A local-first, high-performance desktop productivity engine featuring unmissable reminders that pierce through Windows Do Not Disturb, interactive force-directed graph view, markdown logbook journal, global quick scratchpad, and activity vault.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-38bdf8.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-10b981)](https://github.com/Suruyaa/Tempo)
@@ -33,17 +33,17 @@ Notifikasi bawaan sistem operasi sering kali gagal menyelamatkan tenggat waktu k
 - **Anti-Procrastination Math Challenge**: Untuk tugas berkategori *Mendesak (Urgent)* atau *Hari H*, tombol penunda/penutup alarm dilindungi oleh tantangan perhitungan matematika cepat untuk memaksa otak Anda sadar dan tidak menunda pekerjaan.
 - **One-Click Vault Access**: Akses instan ke draft dokumen kerja langsung dari popup notifikasi saat alarm berbunyi.
 
-### 2. Obsidian-Style Force-Directed Graph View
+### 2. Interactive Force-Directed Graph View
 - Visualisasi hubungan prasyarat tugas (**Point A ➜ Point B**) menggunakan simulasi fisika partikel kanvas HTML5 interaktif.
 - **Physics Simulation**: Dilengkapi kalkulasi gaya tolak (*repulsion*), pegas elastis (*spring damping*), gravitasi pusat, dan inersia drag-and-bounce.
 - **Dual Mode**:
-  - **Force Galaxy (Obsidian View)**: Node orbs dinamis dengan glow status (Hijau = Selesai, Cyan = Normal, Kuning = Mendekati Tenggat, Merah = Urgent, Abu-abu = Terkunci).
+  - **Force Galaxy View**: Node orbs dinamis dengan glow status (Hijau = Selesai, Cyan = Normal, Kuning = Mendekati Tenggat, Merah = Urgent, Abu-abu = Terkunci).
   - **Timeline Flowchart**: Tata letak berurutan berdasarkan kronologi tenggat waktu.
 - **Node Inspector Drawer**: Klik sembarang node untuk memfokuskan kamera, menginspeksi detail, membuka link vault, atau menandai selesai secara real-time.
 
 ### 3. Logbook & Jurnal Produktivitas (Markdown Native)
 - Ruang pencatatan refleksi harian, evaluasi sprint kerja, dan log pencapaian tugas.
-- **Ekspor ke `.MD`**: Kompilasi seluruh entri jurnal dan riwayat tugas selesai ke dalam format standar Markdown untuk diarsipkan di Obsidian, Notion, atau GitHub.
+- **Ekspor ke `.MD`**: Kompilasi seluruh entri jurnal dan riwayat tugas selesai ke dalam format standar Markdown untuk diarsipkan di aplikasi catatan pilihan Anda, Notion, atau repositori dokumen.
 - **Impor dari `.MD`**: Baca kembali berkas Markdown eksternal dan masukkan secara otomatis ke dalam database lokal TEMPO.
 - **Auto Milestone Logger**: Setiap tugas yang ditandai selesai otomatis tercatat ke dalam feed pencapaian logbook.
 
@@ -164,7 +164,7 @@ Tempo/
 │       │   ├── agendaView.js     # Tampilan to-do list, filter, dan countdown cards
 │       │   ├── calendarView.js   # Kalender bulanan, libur nasional & perencana
 │       │   ├── logbookView.js    # Editor jurnal & ekspor/impor Markdown
-│       │   ├── nodeGraph.js      # Obsidian-style force-directed physics graph
+│       │   ├── nodeGraph.js      # Interactive force-directed physics graph
 │       │   └── vaultView.js      # Brankas berkas & tautan online
 │       ├── alert.html / alert.js # Antarmuka peringatan darurat anti-procrastination
 │       ├── scratchpad.html / js  # Floating quick notes widget

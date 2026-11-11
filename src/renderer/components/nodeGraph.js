@@ -1,11 +1,11 @@
-// Obsidian-Style Force-Directed Graph Engine
+// Force-Directed Physics Graph Engine
 class NodeGraph {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
     this.activities = [];
     this.nodes = [];
     this.edges = [];
-    this.mode = 'obsidian'; // 'obsidian' (Force-directed) atau 'pipeline' (Horizontal tree)
+    this.mode = 'force'; // 'force' (Force-directed) atau 'pipeline' (Horizontal tree)
 
     // Canvas & Animation
     this.canvas = null;
@@ -118,7 +118,7 @@ class NodeGraph {
     if (!this.container) return;
 
     this.container.innerHTML = `
-      <div class="obsidian-graph-wrapper">
+      <div class="graph-canvas-wrapper">
         <!-- Floating Controls Toolbar -->
         <div class="graph-controls-overlay">
           <span style="display: flex; align-items: center; color: var(--accent-cyan);">
@@ -135,8 +135,8 @@ class NodeGraph {
           </div>
           
           <div class="graph-view-toggles">
-            <button class="graph-toggle-btn ${this.mode === 'obsidian' ? 'active' : ''}" onclick="window.nodeGraph.setMode('obsidian')">
-              Force Galaxy (Obsidian)
+            <button class="graph-toggle-btn ${this.mode === 'force' ? 'active' : ''}" onclick="window.nodeGraph.setMode('force')">
+              Force Galaxy
             </button>
             <button class="graph-toggle-btn ${this.mode === 'pipeline' ? 'active' : ''}" onclick="window.nodeGraph.setMode('pipeline')">
               Timeline Flowchart
@@ -150,7 +150,7 @@ class NodeGraph {
         </div>
 
         <!-- HTML5 Physics Canvas -->
-        <canvas id="obsidianCanvas" style="width: 100%; height: 100%; display: block;"></canvas>
+        <canvas id="graphCanvas" style="width: 100%; height: 100%; display: block;"></canvas>
 
         <!-- Node Inspector Drawer (Detail saat node diklik) -->
         <div id="graphDrawer" class="graph-inspector-drawer ${this.selectedNode ? '' : 'hidden'}">
@@ -163,7 +163,7 @@ class NodeGraph {
   }
 
   setupCanvas() {
-    this.canvas = document.getElementById('obsidianCanvas');
+    this.canvas = document.getElementById('graphCanvas');
     if (!this.canvas) return;
     this.ctx = this.canvas.getContext('2d');
 
@@ -415,7 +415,7 @@ class NodeGraph {
     ctx.translate(this.pan.x, this.pan.y);
     ctx.scale(this.scale, this.scale);
 
-    // 1. Draw Star / Dot Grid Background (Obsidian Cosmos Vibe)
+    // 1. Draw Star / Dot Grid Background (Cosmos Vibe)
     this.drawBackgroundGrid(ctx);
 
     // Tentukan set tetangga jika ada node yang sedang di-hover atau di-klik
@@ -462,7 +462,7 @@ class NodeGraph {
       ctx.restore();
     });
 
-    // 3. Draw Nodes (Obsidian Glowing Orbs)
+    // 3. Draw Nodes (Glowing Orbs)
     this.nodes.forEach(node => {
       const isFocused = focusNode && (focusNode.id === node.id);
       const isNeighbor = focusNode && neighborIds.has(node.id);
@@ -501,7 +501,7 @@ class NodeGraph {
         ctx.stroke();
       }
 
-      // 4. Node Label Floating Text (Obsidian Typography)
+      // 4. Node Label Floating Text
       ctx.shadowBlur = 0;
       ctx.font = isFocused ? 'bold 13px -apple-system, sans-serif' : '600 12px -apple-system, sans-serif';
       ctx.fillStyle = isDimmed ? 'rgba(255, 255, 255, 0.3)' : (isFocused ? '#ffffff' : '#e2e8f0');
