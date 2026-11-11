@@ -1,4 +1,4 @@
-// Force-Directed Physics Graph Engine
+// Force-Directed Physics Graph Engine (Obsidian-Style Interactive Network)
 class NodeGraph {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
@@ -12,7 +12,7 @@ class NodeGraph {
     this.ctx = null;
     this.animId = null;
 
-    // Viewport transform
+    // Viewport transform (Pan & Zoom)
     this.pan = { x: 0, y: 0 };
     this.scale = 1;
     this.isPanning = false;
@@ -22,13 +22,15 @@ class NodeGraph {
     this.draggedNode = null;
     this.hoveredNode = null;
     this.selectedNode = null;
+    this.hasDragged = false;
+    this.dragStartPos = { x: 0, y: 0 };
 
-    // Physics constants
-    this.repulsion = 4500;
-    this.springLength = 160;
-    this.springStrength = 0.04;
-    this.gravity = 0.015;
-    this.damping = 0.88;
+    // Physics constants (Obsidian-like gentle float)
+    this.repulsion = 2200;
+    this.springLength = 150;
+    this.springStrength = 0.035;
+    this.gravity = 0.0006;
+    this.damping = 0.84;
 
     this.initDone = false;
   }
@@ -41,19 +43,21 @@ class NodeGraph {
     }
   }
 
-  buildGraph() {
-    const existingPos = new Map();
-    this.nodes.forEach(n => existingPos.set(n.id, { x: n.x, y: n.y, vx: n.vx, vy: n.vy }));
+  buildGraph(forceReset = false) {
+    const existingMap = new Map();
+    if (!forceReset) {
+      this.nodes.forEach(n => existingMap.set(n.id, { x: n.x, y: n.y, isPinned: n.isPinned }));
+    }
 
-    const width = this.canvas ? this.canvas.width : 800;
+    const width = this.canvas ? this.canvas.width : 850;
     const height = this.canvas ? this.canvas.height : 600;
     const centerX = width / 2;
     const centerY = height / 2;
 
     this.nodes = this.activities.map((act, i) => {
-      const prev = existingPos.get(act.id);
+      const prev = existingMap.get(act.id);
       const angle = (i / Math.max(1, this.activities.length)) * Math.PI * 2;
-      const radius = 120 + Math.random() * 80;
+      const radius = 130 + (i % 3) * 60;
 
       // Hitung ukuran & warna node sesuai status
       let color = '#38bdf8'; // normal cyan
@@ -84,8 +88,9 @@ class NodeGraph {
         data: act,
         x: prev ? prev.x : centerX + Math.cos(angle) * radius,
         y: prev ? prev.y : centerY + Math.sin(angle) * radius,
-        vx: prev ? prev.vx : (Math.random() - 0.5) * 2,
-        vy: prev ? prev.vy : (Math.random() - 0.5) * 2,
+        vx: 0,
+        vy: 0,
+        isPinned: prev ? !!prev.isPinned : false,
         radius: size,
         color,
         glowColor,
@@ -118,7 +123,7 @@ class NodeGraph {
     if (!this.container) return;
 
     this.container.innerHTML = `
-      <div class="graph-canvas-wrapper">
+      <div class="graph-canvas-wrapper" id="graphWrapper">
         <!-- Floating Controls Toolbar -->
         <div class="graph-controls-overlay">
           <span style="display: flex; align-items: center; color: var(--accent-cyan);">
@@ -130,6 +135,7 @@ class NodeGraph {
               <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
             </svg>
           </span>
+          
           <div class="graph-stat-badge">
             ${this.nodes.length} Nodes • ${this.edges.length} Relasi
           </div>
@@ -143,10 +149,22 @@ class NodeGraph {
             </button>
           </div>
 
-          <button class="btn btn-outline btn-sm" onclick="window.nodeGraph.resetCamera()" title="Tengahkan Kanvas">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
-            Reset Kamera
-          </button>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <button class="btn btn-secondary btn-sm" onclick="window.nodeGraph.zoomIn()" title="Perbesar Tampilan (+)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="window.nodeGraph.zoomOut()" title="Perkecil Tampilan (-)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="window.nodeGraph.resetCamera()" title="Tengahkan Kanvas (Reset Zoom & Pan)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+              Reset View
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="window.nodeGraph.resetNodePositions()" title="Lepas Semua Pin & Sebar Ulang Posisi Node">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              Sebar Ulang
+            </button>
+          </div>
         </div>
 
         <!-- HTML5 Physics Canvas -->
@@ -169,12 +187,13 @@ class NodeGraph {
 
     // Resize canvas to match container exactly
     const rect = this.canvas.parentElement.getBoundingClientRect();
-    this.canvas.width = rect.width;
-    this.canvas.height = rect.height;
+    this.canvas.width = Math.max(300, rect.width || 900);
+    this.canvas.height = Math.max(300, rect.height || 600);
 
-    // Reset pan ke tengah
+    // Initial center pan
     if (!this.initDone) {
       this.pan = { x: 0, y: 0 };
+      this.scale = 1;
       this.initDone = true;
     }
 
@@ -186,27 +205,40 @@ class NodeGraph {
     const canvas = this.canvas;
     if (!canvas) return;
 
-    canvas.onmousedown = (e) => {
+    // Pointer Down (Supports Mouse & Touch)
+    canvas.onpointerdown = (e) => {
+      canvas.setPointerCapture(e.pointerId);
       const mouse = this.getTransformedMouse(e);
       const clicked = this.getNodeAt(mouse.x, mouse.y);
 
       if (clicked) {
         this.draggedNode = clicked;
         this.selectedNode = clicked;
-        this.updateDrawer();
+        this.hasDragged = false;
+        this.dragStartPos = { x: clicked.x, y: clicked.y };
+        clicked.vx = 0;
+        clicked.vy = 0;
+        clicked.isPinned = true; // Pin during drag
+        canvas.style.cursor = 'grabbing';
       } else {
         this.isPanning = true;
         this.panStart = { x: e.clientX - this.pan.x, y: e.clientY - this.pan.y };
+        canvas.style.cursor = 'grabbing';
       }
     };
 
-    window.onmousemove = (e) => {
+    // Pointer Move
+    canvas.onpointermove = (e) => {
       if (this.draggedNode) {
         const mouse = this.getTransformedMouse(e);
         this.draggedNode.x = mouse.x;
         this.draggedNode.y = mouse.y;
         this.draggedNode.vx = 0;
         this.draggedNode.vy = 0;
+
+        if (Math.hypot(this.draggedNode.x - this.dragStartPos.x, this.draggedNode.y - this.dragStartPos.y) > 4) {
+          this.hasDragged = true;
+        }
       } else if (this.isPanning) {
         this.pan.x = e.clientX - this.panStart.x;
         this.pan.y = e.clientY - this.panStart.y;
@@ -221,18 +253,46 @@ class NodeGraph {
       }
     };
 
-    window.onmouseup = () => {
-      this.draggedNode = null;
+    // Pointer Up
+    canvas.onpointerup = (e) => {
+      try {
+        canvas.releasePointerCapture(e.pointerId);
+      } catch (_) {}
+
+      if (this.draggedNode) {
+        // Tetap pinned di posisi yang baru ditaruh oleh pengguna
+        this.draggedNode.vx = 0;
+        this.draggedNode.vy = 0;
+        this.draggedNode.isPinned = true;
+
+        if (!this.hasDragged) {
+          // Hanya klik biasa tanpa drag -> update drawer detail
+          this.updateDrawer();
+        }
+        this.draggedNode = null;
+      }
+
       this.isPanning = false;
-      if (canvas) canvas.style.cursor = this.hoveredNode ? 'pointer' : 'default';
+      canvas.style.cursor = this.hoveredNode ? 'pointer' : 'grab';
     };
 
+    // Double-click unpins node so it can float naturally again
+    canvas.ondblclick = (e) => {
+      const mouse = this.getTransformedMouse(e);
+      const clicked = this.getNodeAt(mouse.x, mouse.y);
+      if (clicked) {
+        clicked.isPinned = !clicked.isPinned;
+        clicked.vx = (Math.random() - 0.5) * 2;
+        clicked.vy = (Math.random() - 0.5) * 2;
+      }
+    };
+
+    // Smooth Zoom with Mouse Wheel toward cursor
     canvas.onwheel = (e) => {
       e.preventDefault();
-      const zoomFactor = e.deltaY < 0 ? 1.08 : 0.92;
-      const newScale = Math.min(Math.max(0.3, this.scale * zoomFactor), 3);
-      
-      // Zoom center toward mouse
+      const zoomFactor = e.deltaY < 0 ? 1.09 : 0.91;
+      const newScale = Math.min(Math.max(0.25, this.scale * zoomFactor), 3.5);
+
       const rect = canvas.getBoundingClientRect();
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
@@ -257,7 +317,7 @@ class NodeGraph {
     for (let i = this.nodes.length - 1; i >= 0; i--) {
       const n = this.nodes[i];
       const dist = Math.hypot(n.x - x, n.y - y);
-      if (dist <= n.radius + 6) {
+      if (dist <= n.radius + 8) {
         return n;
       }
     }
@@ -277,7 +337,6 @@ class NodeGraph {
 
   updatePhysics() {
     if (this.mode === 'pipeline') {
-      // In pipeline mode, layout nodes in structured milestone columns
       this.updatePipelineLayout();
       return;
     }
@@ -296,16 +355,16 @@ class NodeGraph {
         const dy = n2.y - n1.y;
         const dist = Math.hypot(dx, dy) || 1;
 
-        if (dist < 400) {
+        if (dist < 320) {
           const force = (this.repulsion / (dist * dist));
           const fx = (dx / dist) * force;
           const fy = (dy / dist) * force;
 
-          if (n1 !== this.draggedNode) {
+          if (n1 !== this.draggedNode && !n1.isPinned) {
             n1.vx -= fx;
             n1.vy -= fy;
           }
-          if (n2 !== this.draggedNode) {
+          if (n2 !== this.draggedNode && !n2.isPinned) {
             n2.vx += fx;
             n2.vy += fy;
           }
@@ -326,24 +385,29 @@ class NodeGraph {
       const fx = (dx / dist) * force;
       const fy = (dy / dist) * force;
 
-      if (n1 !== this.draggedNode) {
+      if (n1 !== this.draggedNode && !n1.isPinned) {
         n1.vx += fx;
         n1.vy += fy;
       }
-      if (n2 !== this.draggedNode) {
+      if (n2 !== this.draggedNode && !n2.isPinned) {
         n2.vx -= fx;
         n2.vy -= fy;
       }
     });
 
-    // 3. Center Gravity & Velocity Update
+    // 3. Very gentle centering force only for unpinned nodes
     this.nodes.forEach(n => {
-      if (n === this.draggedNode) return;
+      if (n === this.draggedNode || n.isPinned) return;
 
       const toCenterX = centerX - n.x;
       const toCenterY = centerY - n.y;
-      n.vx += toCenterX * this.gravity;
-      n.vy += toCenterY * this.gravity;
+      const distCenter = Math.hypot(toCenterX, toCenterY);
+
+      // Hanya tarik lembut jika terlalu jauh dari kanvas tengah
+      if (distCenter > 200) {
+        n.vx += toCenterX * this.gravity;
+        n.vy += toCenterY * this.gravity;
+      }
 
       n.vx *= this.damping;
       n.vy *= this.damping;
@@ -354,7 +418,6 @@ class NodeGraph {
   }
 
   updatePipelineLayout() {
-    // Organisasi kolom berdasarkan urutan ketergantungan
     const colSpacing = 220;
     const rowSpacing = 90;
     const centerX = this.canvas.width / 2;
@@ -396,11 +459,11 @@ class NodeGraph {
       const startY = centerY - ((items.length - 1) * rowSpacing) / 2;
 
       items.forEach((n, rowIdx) => {
-        if (n === this.draggedNode) return;
+        if (n === this.draggedNode || n.isPinned) return;
         const targetX = startX + lvl * colSpacing;
         const targetY = startY + rowIdx * rowSpacing;
-        n.x += (targetX - n.x) * 0.15;
-        n.y += (targetY - n.y) * 0.15;
+        n.x += (targetX - n.x) * 0.08;
+        n.y += (targetY - n.y) * 0.08;
       });
     });
   }
@@ -490,7 +553,7 @@ class NodeGraph {
       ctx.shadowBlur = isFocused ? 24 : 12;
       ctx.fill();
 
-      // Ring border untuk fokus atau selesai
+      // Ring border untuk fokus, selesai, atau pinned
       if (isFocused) {
         ctx.lineWidth = 3;
         ctx.strokeStyle = '#ffffff';
@@ -499,6 +562,13 @@ class NodeGraph {
         ctx.lineWidth = 2;
         ctx.strokeStyle = '#a7f3d0';
         ctx.stroke();
+      } else if (node.isPinned) {
+        // Aksen cincin halus untuk node yang posisinya dikunci
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.8)';
+        ctx.setLineDash([2, 3]);
+        ctx.stroke();
+        ctx.setLineDash([]);
       }
 
       // 4. Node Label Floating Text
@@ -583,6 +653,7 @@ class NodeGraph {
         <div><strong>Deadline:</strong> ${act.dueDate || '-'} • ${act.dueTime || '-'}</div>
         <div><strong>Prioritas:</strong> ${act.priority || 'Normal'}</div>
         <div><strong>Kategori:</strong> ${act.category || 'Umum'}</div>
+        <div><strong>Posisi:</strong> ${node.isPinned ? '<span style="color: #38bdf8;">Terkunci di Kanvas (Klik 2x untuk lepas)</span>' : '<span style="color: #94a3b8;">Mengambang Bebas</span>'}</div>
       </div>
 
       ${vaultLinks.length > 0 ? `
@@ -639,10 +710,27 @@ class NodeGraph {
     this.render();
   }
 
+  zoomIn() {
+    this.scale = Math.min(3.5, this.scale * 1.25);
+  }
+
+  zoomOut() {
+    this.scale = Math.max(0.25, this.scale / 1.25);
+  }
+
   resetCamera() {
     this.pan = { x: 0, y: 0 };
     this.scale = 1;
-    this.buildGraph();
+  }
+
+  resetNodePositions() {
+    this.nodes.forEach(n => {
+      n.isPinned = false;
+      n.vx = (Math.random() - 0.5) * 4;
+      n.vy = (Math.random() - 0.5) * 4;
+    });
+    this.buildGraph(true);
+    this.resetCamera();
   }
 }
 

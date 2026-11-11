@@ -52,7 +52,9 @@ Notifikasi bawaan sistem operasi sering kali gagal menyelamatkan tenggat waktu k
 
 ### 2. Interactive Force-Directed Graph View
 - Visualisasi hubungan prasyarat tugas (**Point A ➜ Point B**) menggunakan simulasi fisika partikel kanvas HTML5 interaktif.
-- **Physics Simulation**: Dilengkapi kalkulasi gaya tolak (*repulsion*), pegas elastis (*spring damping*), gravitasi pusat, dan inersia drag-and-bounce.
+- **Bebas Geser & Pinning Posisi (Free Drag-and-Drop)**: Seluruh node tugas dapat ditarik dan digeser bebas ke mana pun di seluruh kanvas. Saat ditaruh, posisi node terkunci otomatis (*pinned*) agar tidak kembali membal ke tengah, dan dapat dilepas kembali dengan klik dua kali (*double-click*).
+- **Kanvas Luas & Navigasi Bebas (Pan & Zoom)**: Geser kanvas ke segala arah (*drag to pan*) serta perbesar/perkecil tampilan dengan scroll mouse wheel atau tombol kontrol zoom (+ / -).
+- **Physics Simulation**: Dilengkapi kalkulasi gaya tolak (*repulsion*), pegas elastis (*spring damping*), dan inersia gerak antar node yang saling terhubung.
 - **Dual Mode**:
   - **Force Galaxy View**: Node orbs dinamis dengan glow status (Hijau = Selesai, Cyan = Normal, Kuning = Mendekati Tenggat, Merah = Urgent, Abu-abu = Terkunci).
   - **Timeline Flowchart**: Tata letak berurutan berdasarkan kronologi tenggat waktu.
