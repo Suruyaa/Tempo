@@ -60,11 +60,12 @@ Notifikasi bawaan sistem operasi sering kali gagal menyelamatkan tenggat waktu k
   - **H-1**: Peringatan intensif malam sebelum tenggat.
   - **Hari H & Jam H**: Notifikasi layar penuh tepat waktu.
 
-### 6. Kalender Terintegrasi & Hari Libur Nasional Indonesia (SKB 3 Menteri)
-- Memetakan seluruh **Hari Libur Nasional Indonesia (SKB 3 Menteri)** dan Cuti Bersama.
-- Memuat **Hari Peringatan Nasional** (Hari Pahlawan, Sumpah Pemuda, Hari Guru, dll) serta **Hari Peringatan Internasional**.
-- Agenda pribadi dipetakan langsung berdampingan dengan tanggal merah, memudahkan mitigasi deadline yang berbenturan dengan libur panjang.
-- Ekspor kalender ke format **`.ICS`** standar untuk disinkronkan ke Google Calendar atau kalender ponsel Anda.
+### 6. Kalender Terintegrasi dengan Konteks Edukatif (SKB 3 Menteri, PBB, & UNESCO)
+- **Hari Libur Nasional Resmi (SKB 3 Menteri)**: Tanggal merah resmi pemerintah Indonesia lengkap dengan makna dan latar belakang penetapannya.
+- **Hari Peringatan Nasional Bersejarah RI**: Dilengkapi ikon bendera Merah Putih dan uraian sejarah mendalam (Hari Pahlawan, Sumpah Pemuda, Hardiknas, Hari Kartini, Hari Kesaktian Pancasila, dll).
+- **Hari Internasional Resmi (PBB / United Nations & UNESCO)**: Dikurasi langsung dari daftar observasi resmi PBB & UNESCO (Hari Sains Sedunia, Hari Bahasa Ibu, Hari Perdamaian, Hari Kebebasan Pers, Hari HAM, Hari Bumi, dll) lengkap dengan simbol Globe dan penjelasan tujuan globalnya.
+- **Panel Konteks & Edukasi**: Klik sembarang tanggal di kalender untuk membaca ringkasan sejarah, tujuan, dan urgensi di balik setiap hari peringatan secara komprehensif.
+- **Ekspor Kalender Standar (`.ICS`)**: Unduh jadwal lengkap dalam format `.ics` untuk disinkronkan ke Google Calendar, Apple Calendar, atau kalender ponsel Anda.
 
 ### 7. Activity Vault (Brankas Berkas & Dokumen)
 - Brankas berkas per agenda untuk mengaitkan draft lokal (PDF, Word, Excel, source code) serta tautan dokumen online (Google Docs, Figma, PRD).

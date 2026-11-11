@@ -88,13 +88,39 @@ class CalendarView {
       cellsHtml += `
         <div class="${cellClasses}" onclick="window.calendarView.selectDate('${dateKey}')">
           <div class="cal-day-num">${day}</div>
-          ${holiday ? `<div class="cal-tag-pill tag-holiday" title="${holiday.name}"><span class="holiday-dot-indicator"></span>${holiday.name}</div>` : ''}
-          ${obsId ? `<div class="cal-tag-pill tag-observance" title="${obsId.name}"><span class="badge-tag-id">ID</span>${obsId.name}</div>` : ''}
-          ${obsInt ? `<div class="cal-tag-pill tag-observance" title="${obsInt.name}"><span class="badge-tag-int">INT</span>${obsInt.name}</div>` : ''}
+          
+          ${holiday ? `
+            <div class="cal-tag-pill tag-holiday" title="${this.escapeHtml(holiday.name)}">
+              <span class="holiday-dot-indicator"></span>
+              <span class="cal-tag-label">${this.escapeHtml(holiday.name)}</span>
+            </div>
+          ` : ''}
+
+          ${obsId ? `
+            <div class="cal-tag-pill tag-observance-id" title="Nasional: ${this.escapeHtml(obsId.name)}">
+              <span class="flag-indonesia-icon"></span>
+              <span class="cal-tag-label">${this.escapeHtml(obsId.name)}</span>
+            </div>
+          ` : ''}
+
+          ${obsInt ? `
+            <div class="cal-tag-pill tag-observance-int" title="${this.escapeHtml(obsInt.source || 'UN')}: ${this.escapeHtml(obsInt.name)}">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+              <span class="cal-tag-label">${this.escapeHtml(obsInt.name)}</span>
+            </div>
+          ` : ''}
+
           ${dayActivities.map(a => `
-            <div class="cal-tag-pill tag-task" title="${a.title}">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
-              <span>${a.title}</span>
+            <div class="cal-tag-pill tag-task" title="${this.escapeHtml(a.title)}">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 14 14"></polyline>
+              </svg>
+              <span class="cal-tag-label">${this.escapeHtml(a.title)}</span>
             </div>
           `).join('')}
         </div>
@@ -149,53 +175,73 @@ class CalendarView {
           </div>
         </div>
 
-        <!-- Sidebar Date Inspector -->
+        <!-- Sidebar Date Inspector (Informasi & Konteks Edukatif) -->
         <div class="cal-card-main" style="max-height: 100%; overflow-y: auto;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle);">
             <h3 style="font-size: 15px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 6px;">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-              Info Tanggal
+              Info &amp; Konteks Tanggal
             </h3>
             <span style="font-size: 13px; color: var(--accent-cyan); font-weight: 700;">${this.selectedDateStr}</span>
           </div>
 
           <div style="display: flex; flex-direction: column; gap: 16px;">
-            <!-- Libur Nasional -->
+            <!-- 1. HARI LIBUR NASIONAL -->
             <div>
-              <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Hari Libur Nasional</div>
+              <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Hari Libur Nasional Resmi</div>
               ${selectedHoliday ? `
-                <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); padding: 12px; border-radius: var(--radius-md); color: #fca5a5; font-size: 13px; font-weight: 700; display: flex; flex-direction: column; gap: 4px;">
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444; display: inline-block;"></span>
-                    ${selectedHoliday.name}
+                <div class="holiday-inspector-box">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                    <span class="holiday-dot-indicator" style="width: 10px; height: 10px;"></span>
+                    <strong style="font-size: 14px; color: #fca5a5;">${this.escapeHtml(selectedHoliday.name)}</strong>
                   </div>
-                  <div style="font-size: 11px; font-weight: 500; color: #fca5a5; opacity: 0.85;">Tanggal Merah Resmi Indonesia (SKB 3 Menteri)</div>
+                  <div class="inspector-badge badge-merah-skb">SKB 3 Menteri • Tanggal Merah</div>
+                  <p class="inspector-desc-text">
+                    ${this.escapeHtml(selectedHoliday.description || 'Hari libur resmi nasional Republik Indonesia.')}
+                  </p>
                 </div>
-              ` : '<div style="font-size: 12px; color: #94a3b8;">Bukan hari libur nasional resmi.</div>'}
+              ` : '<div style="font-size: 12px; color: #94a3b8; font-style: italic;">Bukan hari libur nasional resmi.</div>'}
             </div>
 
-            <!-- Hari Peringatan -->
+            <!-- 2. HARI PERINGATAN NASIONAL (INDONESIA) -->
             <div>
-              <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Hari Besar / Peringatan</div>
-              ${(selectedObsId || selectedObsInt) ? `
-                <div style="display: flex; flex-direction: column; gap: 6px;">
-                  ${selectedObsId ? `
-                    <div style="background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); padding: 8px 12px; border-radius: var(--radius-sm); color: #d8b4fe; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
-                      <span class="badge-tag-id">ID</span>
-                      ${selectedObsId.name}
-                    </div>
-                  ` : ''}
-                  ${selectedObsInt ? `
-                    <div style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); padding: 8px 12px; border-radius: var(--radius-sm); color: #7dd3fc; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
-                      <span class="badge-tag-int">INT</span>
-                      ${selectedObsInt.name}
-                    </div>
-                  ` : ''}
+              <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Peringatan Nasional Indonesia</div>
+              ${selectedObsId ? `
+                <div class="observance-id-inspector-box">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                    <span class="flag-indonesia-icon" style="width: 18px; height: 12px;"></span>
+                    <strong style="font-size: 14px; color: #fecdd3;">${this.escapeHtml(selectedObsId.name)}</strong>
+                  </div>
+                  <div class="inspector-badge badge-nasional-ri">Peringatan Bersejarah RI</div>
+                  <p class="inspector-desc-text">
+                    ${this.escapeHtml(selectedObsId.description)}
+                  </p>
                 </div>
-              ` : '<div style="font-size: 12px; color: #94a3b8;">Tidak ada peringatan khusus.</div>'}
+              ` : '<div style="font-size: 12px; color: #94a3b8; font-style: italic;">Tidak ada peringatan nasional di tanggal ini.</div>'}
             </div>
 
-            <!-- Agenda Pengguna pada Tanggal ini -->
+            <!-- 3. HARI PERINGATAN INTERNASIONAL (UN / UNESCO) -->
+            <div>
+              <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Hari Internasional (PBB &amp; UNESCO)</div>
+              ${selectedObsInt ? `
+                <div class="observance-int-inspector-box">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="2" y1="12" x2="22" y2="12"></line>
+                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                    <strong style="font-size: 14px; color: #bae6fd;">${this.escapeHtml(selectedObsInt.name)}</strong>
+                  </div>
+                  <div class="inspector-badge badge-unesco-un">${this.escapeHtml(selectedObsInt.source || 'United Nations & UNESCO')}</div>
+                  <p class="inspector-desc-text">
+                    ${this.escapeHtml(selectedObsInt.description)}
+                  </p>
+                </div>
+              ` : '<div style="font-size: 12px; color: #94a3b8; font-style: italic;">Tidak ada peringatan internasional di tanggal ini.</div>'}
+            </div>
+
+            <!-- 4. AGENDA PENGGUNA -->
             <div>
               <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">
                 Tenggat Tugas Anda (${selectedActs.length})
@@ -204,7 +250,7 @@ class CalendarView {
                 <div style="display: flex; flex-direction: column; gap: 8px;">
                   ${selectedActs.map(a => `
                     <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px; font-size: 13px;">
-                      <div style="font-weight: 700; color: #fff;">${a.title}</div>
+                      <div style="font-weight: 700; color: #fff;">${this.escapeHtml(a.title)}</div>
                       <div style="font-size: 11px; color: #94a3b8; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                         Jam: ${a.dueTime || '-'} • Prioritas: ${a.priority}
@@ -212,7 +258,7 @@ class CalendarView {
                     </div>
                   `).join('')}
                 </div>
-              ` : '<div style="font-size: 12px; color: #94a3b8;">Belum ada agenda di tanggal ini.</div>'}
+              ` : '<div style="font-size: 12px; color: #94a3b8; font-style: italic;">Belum ada agenda di tanggal ini.</div>'}
             </div>
 
             <button class="btn btn-primary btn-glow" onclick="window.openAddActivityWithDate('${this.selectedDateStr}')" style="width: 100%; justify-content: center; margin-top: 8px;">
@@ -248,6 +294,11 @@ class CalendarView {
 
   formatDate(d) {
     return d.toISOString().split('T')[0];
+  }
+
+  escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 }
 

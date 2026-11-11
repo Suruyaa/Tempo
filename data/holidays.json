@@ -1,57 +1,545 @@
 {
   "national_holidays_id": [
-    { "date": "2026-01-01", "name": "Tahun Baru Masehi", "type": "libur_nasional" },
-    { "date": "2026-01-16", "name": "Isra Mi'raj Nabi Muhammad SAW", "type": "libur_nasional" },
-    { "date": "2026-02-17", "name": "Tahun Baru Imlek 2577 Kongzili", "type": "libur_nasional" },
-    { "date": "2026-03-20", "name": "Hari Suci Nyepi (Tahun Baru Saka 1948)", "type": "libur_nasional" },
-    { "date": "2026-03-21", "name": "Hari Raya Idul Fitri 1447 H (Hari 1)", "type": "libur_nasional" },
-    { "date": "2026-03-22", "name": "Hari Raya Idul Fitri 1447 H (Hari 2)", "type": "libur_nasional" },
-    { "date": "2026-04-03", "name": "Wafat Isa Almasih (Jumat Agung)", "type": "libur_nasional" },
-    { "date": "2026-04-05", "name": "Kebangkitan Isa Almasih (Paskah)", "type": "libur_nasional" },
-    { "date": "2026-05-01", "name": "Hari Buruh Internasional", "type": "libur_nasional" },
-    { "date": "2026-05-14", "name": "Kenaikan Isa Almasih", "type": "libur_nasional" },
-    { "date": "2026-05-31", "name": "Hari Raya Waisak 2570 BE", "type": "libur_nasional" },
-    { "date": "2026-06-01", "name": "Hari Lahir Pancasila", "type": "libur_nasional" },
-    { "date": "2026-06-16", "name": "Tahun Baru Islam 1448 H", "type": "libur_nasional" },
-    { "date": "2026-08-17", "name": "Hari Kemerdekaan RI ke-81", "type": "libur_nasional" },
-    { "date": "2026-08-25", "name": "Maulid Nabi Muhammad SAW", "type": "libur_nasional" },
-    { "date": "2026-12-25", "name": "Hari Raya Natal", "type": "libur_nasional" }
+    {
+      "date": "2026-01-01",
+      "name": "Tahun Baru 2026 Masehi",
+      "type": "libur_nasional",
+      "description": "Hari libur resmi perayaan pergantian tahun kalender Masehi di seluruh dunia berdasarkan SKB 3 Menteri."
+    },
+    {
+      "date": "2026-01-16",
+      "name": "Isra Mi'raj Nabi Muhammad SAW",
+      "type": "libur_nasional",
+      "description": "Peringatan perjalanan spiritual Rasulullah SAW dari Masjidil Haram ke Masjidil Aqsa hingga Sidratul Muntaha untuk menerima perintah salat lima waktu."
+    },
+    {
+      "date": "2026-02-17",
+      "name": "Tahun Baru Imlek 2577 Kongzili",
+      "type": "libur_nasional",
+      "description": "Perayaan pergantian tahun baru tradisional penanggalan Tionghoa yang melambangkan kemakmuran, keharmonisan, dan awal musim semi."
+    },
+    {
+      "date": "2026-03-20",
+      "name": "Hari Suci Nyepi (Tahun Baru Saka 1948)",
+      "type": "libur_nasional",
+      "description": "Hari suci umat Hindu yang dirayakan dengan Catur Brata Penyepian (Amati Geni, Amati Karya, Amati Lelungan, dan Amati Lelanguan) untuk introspeksi diri."
+    },
+    {
+      "date": "2026-03-21",
+      "name": "Hari Raya Idul Fitri 1447 H (Hari Pertama)",
+      "type": "libur_nasional",
+      "description": "Hari kemenangan umat Islam setelah menunaikan ibadah puasa sebulan penuh di bulan Ramadan, momen silaturahmi dan saling memaafkan."
+    },
+    {
+      "date": "2026-03-22",
+      "name": "Hari Raya Idul Fitri 1447 H (Hari Kedua)",
+      "type": "libur_nasional",
+      "description": "Kelanjutan perayaan Hari Raya Idul Fitri 1447 Hijriah resmi libur nasional pemerintah Republik Indonesia."
+    },
+    {
+      "date": "2026-04-03",
+      "name": "Wafat Isa Almasih (Jumat Agung)",
+      "type": "libur_nasional",
+      "description": "Peringatan penyaliban dan wafatnya Yesus Kristus di Bukit Golgota dalam liturgi Pekan Suci umat Kristiani."
+    },
+    {
+      "date": "2026-04-05",
+      "name": "Kebangkitan Isa Almasih (Paskah)",
+      "type": "libur_nasional",
+      "description": "Perayaan kebangkitan Yesus Kristus dari kematian pada hari ketiga setelah penyaliban, simbol kemenangan atas maut dan harapan baru."
+    },
+    {
+      "date": "2026-05-01",
+      "name": "Hari Buruh Internasional (May Day)",
+      "type": "libur_nasional",
+      "description": "Hari libur resmi penghormatan atas perjuangan gerakan buruh global dalam menuntut hak ketenagakerjaan yang adil dan layak."
+    },
+    {
+      "date": "2026-05-14",
+      "name": "Kenaikan Isa Almasih",
+      "type": "libur_nasional",
+      "description": "Peringatan terangkatnya Yesus Kristus ke surga pada hari ke-40 setelah kebangkitan-Nya di hadapan para murid-Nya."
+    },
+    {
+      "date": "2026-05-31",
+      "name": "Hari Raya Waisak 2570 BE",
+      "type": "libur_nasional",
+      "description": "Peringatan Trisuci Waisak umat Buddha merayakan tiga peristiwa agung: kelahiran Pangeran Siddharta, pencapaian Penerangan Sempurna, dan Parinibbana Buddha Gautama."
+    },
+    {
+      "date": "2026-06-01",
+      "name": "Hari Lahir Pancasila",
+      "type": "libur_nasional",
+      "description": "Memperingati pidato Presiden Soekarno pada 1 Juni 1945 di hadapan sidang BPUPKI yang untuk pertama kalinya mencetuskan konsep dasar filosofi Pancasila."
+    },
+    {
+      "date": "2026-06-16",
+      "name": "Tahun Baru Islam 1448 Hijriah",
+      "type": "libur_nasional",
+      "description": "Peringatan tanggal 1 Muharram yang menandai peristiwa hijrahnya Nabi Muhammad SAW dari Mekkah ke Madinah."
+    },
+    {
+      "date": "2026-08-17",
+      "name": "Hari Proklamasi Kemerdekaan RI ke-81",
+      "type": "libur_nasional",
+      "description": "Hari Kemerdekaan Republik Indonesia memperingati naskah Proklamasi yang dibacakan oleh Ir. Soekarno dan Drs. Mohammad Hatta pada 17 Agustus 1945."
+    },
+    {
+      "date": "2026-08-25",
+      "name": "Maulid Nabi Muhammad SAW",
+      "type": "libur_nasional",
+      "description": "Peringatan hari kelahiran Rasulullah Muhammad SAW pada 12 Rabiul Awal tahun Gajah, teladan akhlak mulia bagi umat manusia."
+    },
+    {
+      "date": "2026-12-25",
+      "name": "Hari Raya Natal",
+      "type": "libur_nasional",
+      "description": "Perayaan hari kelahiran Yesus Kristus bagi umat Kristiani di seluruh dunia yang membawa pesan damai dan kasih bagi sesama."
+    }
   ],
   "national_observances_id": [
-    { "month_day": "01-25", "name": "Hari Gizi Nasional", "type": "peringatan_nasional" },
-    { "month_day": "02-09", "name": "Hari Pers Nasional", "type": "peringatan_nasional" },
-    { "month_day": "02-21", "name": "Hari Peduli Sampah Nasional", "type": "peringatan_nasional" },
-    { "month_day": "03-09", "name": "Hari Musik Nasional", "type": "peringatan_nasional" },
-    { "month_day": "04-21", "name": "Hari Kartini", "type": "peringatan_nasional" },
-    { "month_day": "04-28", "name": "Hari Puisi Nasional", "type": "peringatan_nasional" },
-    { "month_day": "05-02", "name": "Hari Pendidikan Nasional (Hardiknas)", "type": "peringatan_nasional" },
-    { "month_day": "05-20", "name": "Hari Kebangkitan Nasional (Harkitnas)", "type": "peringatan_nasional" },
-    { "month_day": "07-23", "name": "Hari Anak Nasional", "type": "peringatan_nasional" },
-    { "month_day": "08-10", "name": "Hari Veteran Nasional", "type": "peringatan_nasional" },
-    { "month_day": "08-17", "name": "Hari Proklamasi Kemerdekaan RI", "type": "peringatan_nasional" },
-    { "month_day": "09-09", "name": "Hari Olahraga Nasional (Haornas)", "type": "peringatan_nasional" },
-    { "month_day": "09-24", "name": "Hari Tani Nasional", "type": "peringatan_nasional" },
-    { "month_day": "10-01", "name": "Hari Kesaktian Pancasila", "type": "peringatan_nasional" },
-    { "month_day": "10-02", "name": "Hari Batik Nasional", "type": "peringatan_nasional" },
-    { "month_day": "10-05", "name": "Hari Tentara Nasional Indonesia (TNI)", "type": "peringatan_nasional" },
-    { "month_day": "10-28", "name": "Hari Sumpah Pemuda", "type": "peringatan_nasional" },
-    { "month_day": "11-10", "name": "Hari Pahlawan", "type": "peringatan_nasional" },
-    { "month_day": "11-12", "name": "Hari Kesehatan Nasional (HKN)", "type": "peringatan_nasional" },
-    { "month_day": "11-25", "name": "Hari Guru Nasional", "type": "peringatan_nasional" },
-    { "month_day": "12-22", "name": "Hari Ibu", "type": "peringatan_nasional" }
+    {
+      "month_day": "01-25",
+      "name": "Hari Gizi Nasional",
+      "type": "peringatan_nasional",
+      "description": "Diperingati sejak 1960 untuk memperkuat komitmen bangsa dalam pemenuhan gizi seimbang, penanggulangan malnutrisi, dan pencegahan stunting pada anak Indonesia."
+    },
+    {
+      "month_day": "02-09",
+      "name": "Hari Pers Nasional (HPN)",
+      "type": "peringatan_nasional",
+      "description": "Bertepatan dengan hari berdirinya Persatuan Wartawan Indonesia (PWI) tahun 1946 di Surakarta. Menghargai pers nasional sebagai pilar keempat demokrasi."
+    },
+    {
+      "month_day": "02-21",
+      "name": "Hari Peduli Sampah Nasional",
+      "type": "peringatan_nasional",
+      "description": "Mengenang peristiwa longsor gunungan sampah TPA Leuwigajah tahun 2005 sebagai refleksi pentingnya pengurangan sampah plastik dan pengelolaan daur ulang berkelanjutan."
+    },
+    {
+      "month_day": "03-09",
+      "name": "Hari Musik Nasional",
+      "type": "peringatan_nasional",
+      "description": "Ditetapkan melalui Keppres No. 10/2013 untuk mengapresiasi karya insan musik Indonesia, bertepatan dengan tanggal lahir komponis Indonesia Raya, Wage Rudolf Soepratman."
+    },
+    {
+      "month_day": "03-30",
+      "name": "Hari Film Nasional",
+      "type": "peringatan_nasional",
+      "description": "Memperingati hari pertama pengambilan gambar film 'Darah dan Doa' (1950) karya sutradara Usmar Ismail, karya film pertama yang diproduksi murni oleh sineas Indonesia."
+    },
+    {
+      "month_day": "04-21",
+      "name": "Hari Kartini",
+      "type": "peringatan_nasional",
+      "description": "Mengenang hari lahir Raden Ajeng Kartini (1879), tokoh pelopor kebangkitan perempuan pribumi yang memperjuangkan kesetaraan pendidikan dan emansipasi perempuan."
+    },
+    {
+      "month_day": "04-28",
+      "name": "Hari Puisi Nasional",
+      "type": "peringatan_nasional",
+      "description": "Mengenang wafatnya penyair legendaris Chairil Anwar pada 28 April 1949, pelopor sastra Angkatan '45 yang mengobarkan semangat perjuangan melalui sajak."
+    },
+    {
+      "month_day": "05-02",
+      "name": "Hari Pendidikan Nasional (Hardiknas)",
+      "type": "peringatan_nasional",
+      "description": "Memperingati kelahiran Ki Hajar Dewantara (1889), pelopor pendidikan kaum pribumi di era kolonial dan pendiri Perguruan Taman Siswa dengan semboyan 'Tut Wuri Handayani'."
+    },
+    {
+      "month_day": "05-20",
+      "name": "Hari Kebangkitan Nasional (Harkitnas)",
+      "type": "peringatan_nasional",
+      "description": "Menandai berdirinya organisasi Boedi Oetomo pada 20 Mei 1908 di Batavia, titik awal bangkitnya kesadaran berbangsa dan persatuan nasional merebut kemerdekaan."
+    },
+    {
+      "month_day": "07-23",
+      "name": "Hari Anak Nasional (HAN)",
+      "type": "peringatan_nasional",
+      "description": "Ditetapkan lewat Keppres No. 44/1984 untuk menjamin bahwa anak-anak Indonesia berhak atas perlindungan, pendidikan bermutu, dan ruang tumbuh kembang tanpa kekerasan."
+    },
+    {
+      "month_day": "08-10",
+      "name": "Hari Veteran Nasional",
+      "type": "peringatan_nasional",
+      "description": "Bentuk penghormatan negara kepada para veteran pejuang kemerdekaan yang telah mengorbankan jiwa dan raga dalam mempertahankan kedaulatan NKRI."
+    },
+    {
+      "month_day": "09-09",
+      "name": "Hari Olahraga Nasional (Haornas)",
+      "type": "peringatan_nasional",
+      "description": "Memperingati pembukaan Pekan Olahraga Nasional (PON) pertama di Surakarta pada 9 September 1948 yang membuktikan eksistensi kedaulatan Republik Indonesia di mata internasional."
+    },
+    {
+      "month_day": "09-24",
+      "name": "Hari Tani Nasional",
+      "type": "peringatan_nasional",
+      "description": "Mengenang pengesahan Undang-Undang Pokok Agraria (UUPA) No. 5 Tahun 1960 yang menjadi tonggak perombakan struktur penguasaan tanah demi keadilan kaum petani."
+    },
+    {
+      "month_day": "10-01",
+      "name": "Hari Kesaktian Pancasila",
+      "type": "peringatan_nasional",
+      "description": "Mengenang keteguhan ideologi Pancasila sebagai pemersatu bangsa dan penghormatan kepada para Pahlawan Revolusi korban peristiwa G30S/PKI tahun 1965."
+    },
+    {
+      "month_day": "10-02",
+      "name": "Hari Batik Nasional",
+      "type": "peringatan_nasional",
+      "description": "Merayakan ditetapkannya Batik Indonesia sebagai Warisan Kemanusiaan untuk Budaya Lisan dan Nonbendawi (Masterpiece of Oral and Intangible Heritage) oleh UNESCO pada 2 Oktober 2009."
+    },
+    {
+      "month_day": "10-05",
+      "name": "Hari Tentara Nasional Indonesia (TNI)",
+      "type": "peringatan_nasional",
+      "description": "Memperingati pembentukan Tentara Keamanan Rakyat (TKR) pada 5 Oktober 1945 oleh Pemerintah RI yang kemudian bertransformasi menjadi Tentara Nasional Indonesia penjaga kedaulatan bangsa."
+    },
+    {
+      "month_day": "10-28",
+      "name": "Hari Sumpah Pemuda",
+      "type": "peringatan_nasional",
+      "description": "Mengenang ikrar Kongres Pemuda II di Batavia tahun 1928: 'Satu Tanah Air, Satu Bangsa, dan Satu Bahasa Indonesia' yang menjadi tonggak persatuan bangsa."
+    },
+    {
+      "month_day": "11-10",
+      "name": "Hari Pahlawan",
+      "type": "peringatan_nasional",
+      "description": "Mengenang pertempuran heroik rakyat dan arek-arek Suroboyo yang dipimpin Bung Tomo pada 10 November 1945 melawan tentara sekutu demi mempertahankan kemerdekaan RI."
+    },
+    {
+      "month_day": "11-12",
+      "name": "Hari Kesehatan Nasional (HKN)",
+      "type": "peringatan_nasional",
+      "description": "Memperingati keberhasilan penyemprotan massal dan pemberantasan wabah malaria tahun 1959 di bawah instruksi Presiden Soekarno, simbol kesadaran hidup sehat."
+    },
+    {
+      "month_day": "11-25",
+      "name": "Hari Guru Nasional",
+      "type": "peringatan_nasional",
+      "description": "Bentuk apresiasi kepada para pendidik bertepatan dengan hari lahir Persatuan Guru Republik Indonesia (PGRI) pada Kongres Guru Indonesia pertama tahun 1945 di Surakarta."
+    },
+    {
+      "month_day": "12-22",
+      "name": "Hari Ibu",
+      "type": "peringatan_nasional",
+      "description": "Memperingati Kongres Perempuan Indonesia pertama di Yogyakarta tanggal 22-25 Desember 1928, merayakan peran strategis dan kepemimpinan perempuan dalam pembangunan bangsa."
+    }
   ],
   "international_observances": [
-    { "month_day": "03-08", "name": "International Women's Day", "type": "peringatan_internasional" },
-    { "month_day": "03-21", "name": "World Forestry Day", "type": "peringatan_internasional" },
-    { "month_day": "03-22", "name": "World Water Day", "type": "peringatan_internasional" },
-    { "month_day": "04-07", "name": "World Health Day (WHO)", "type": "peringatan_internasional" },
-    { "month_day": "04-22", "name": "Earth Day (Hari Bumi)", "type": "peringatan_internasional" },
-    { "month_day": "05-17", "name": "World Telecommunication Day", "type": "peringatan_internasional" },
-    { "month_day": "06-05", "name": "World Environment Day", "type": "peringatan_internasional" },
-    { "month_day": "08-12", "name": "International Youth Day", "type": "peringatan_internasional" },
-    { "month_day": "09-21", "name": "International Day of Peace", "type": "peringatan_internasional" },
-    { "month_day": "10-10", "name": "World Mental Health Day", "type": "peringatan_internasional" },
-    { "month_day": "10-24", "name": "United Nations Day (Hari PBB)", "type": "peringatan_internasional" },
-    { "month_day": "12-10", "name": "Human Rights Day (Hari HAM)", "type": "peringatan_internasional" }
+    {
+      "month_day": "01-04",
+      "name": "World Braille Day",
+      "source": "UN",
+      "type": "peringatan_internasional",
+      "description": "Ditetapkan PBB untuk memperingati hari lahir Louis Braille dan menegaskan hak asasi penyandang tunanetra atas akses informasi melalui tulisan Braille."
+    },
+    {
+      "month_day": "01-24",
+      "name": "International Day of Education",
+      "source": "UNESCO / UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Pendidikan Internasional yang dicanangkan PBB & UNESCO untuk merayakan peran penting pendidikan berkualitas dalam mewujudkan perdamaian dunia dan pembangunan berkelanjutan."
+    },
+    {
+      "month_day": "02-11",
+      "name": "International Day of Women and Girls in Science",
+      "source": "UN / UNESCO",
+      "type": "peringatan_internasional",
+      "description": "Mempromosikan akses setara dan partisipasi penuh perempuan dalam bidang sains, teknologi, rekayasa, dan matematika (STEM)."
+    },
+    {
+      "month_day": "02-13",
+      "name": "World Radio Day",
+      "source": "UNESCO",
+      "type": "peringatan_internasional",
+      "description": "Diproklamasikan oleh UNESCO untuk mengapresiasi radio sebagai media komunikasi massa paling terjangkau yang merekatkan dialog keberagaman."
+    },
+    {
+      "month_day": "02-21",
+      "name": "International Mother Language Day",
+      "source": "UNESCO",
+      "type": "peringatan_internasional",
+      "description": "Hari Bahasa Ibu Internasional UNESCO untuk mempromosikan pelestarian bahasa daerah dan keragaman linguistik dunia agar terhindar dari kepunahan."
+    },
+    {
+      "month_day": "03-08",
+      "name": "International Women's Day",
+      "source": "UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Perempuan Internasional PBB untuk merayakan pencapaian sosial, ekonomi, budaya, dan politik perempuan serta memperjuangkan kesetaraan gender universal."
+    },
+    {
+      "month_day": "03-21",
+      "name": "World Poetry Day",
+      "source": "UNESCO",
+      "type": "peringatan_internasional",
+      "description": "Hari Puisi Sedunia UNESCO untuk mendukung keberagaman linguistik melalui ekspresi puitis dan menghidupkan kembali tradisi lisan pembacaan puisi."
+    },
+    {
+      "month_day": "03-21",
+      "name": "International Day of Forests",
+      "source": "UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Hutan Sedunia PBB untuk meningkatkan kesadaran pentingnya kelestarian hutan bagi siklus oksigen bumi, sumber air, dan pencegahan perubahan iklim."
+    },
+    {
+      "month_day": "03-22",
+      "name": "World Water Day",
+      "source": "UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Air Sedunia PBB untuk mengadvokasi pengelolaan air tawar bersih yang berkelanjutan dan pemenuhan hak universal atas sanitasi yang higienis."
+    },
+    {
+      "month_day": "04-07",
+      "name": "World Health Day",
+      "source": "WHO / UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Kesehatan Sedunia memperingati berdirinya Organisasi Kesehatan Dunia (WHO) tahun 1948, menyerukan jaminan kesehatan menyeluruh (Universal Health Coverage)."
+    },
+    {
+      "month_day": "04-22",
+      "name": "International Mother Earth Day (Hari Bumi)",
+      "source": "UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Bumi Internasional PBB untuk menggalang solidaritas aksi nyata penanggulangan pemanasan global, polusi plastik, dan perusakan ekosistem biosfer."
+    },
+    {
+      "month_day": "04-23",
+      "name": "World Book and Copyright Day",
+      "source": "UNESCO",
+      "type": "peringatan_internasional",
+      "description": "Hari Buku dan Hak Cipta Sedunia UNESCO untuk merayakan buku sebagai jembatan antargenerasi dan melindungi hak cipta intelektual para penulis dunia."
+    },
+    {
+      "month_day": "04-30",
+      "name": "International Jazz Day",
+      "source": "UNESCO",
+      "type": "peringatan_internasional",
+      "description": "Dicanangkan oleh UNESCO untuk menyoroti musik jazz sebagai instrumen perdamaian, persatuan, empati, dan penguat kebebasan berekspresi antarbudaya."
+    },
+    {
+      "month_day": "05-03",
+      "name": "World Press Freedom Day",
+      "source": "UNESCO / UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Kebebasan Pers Sedunia UNESCO untuk mengevaluasi kebebasan berekspresi, membela independensi media, dan melindungi keselamatan jurnalis."
+    },
+    {
+      "month_day": "05-16",
+      "name": "International Day of Light",
+      "source": "UNESCO",
+      "type": "peringatan_internasional",
+      "description": "Hari Cahaya Internasional UNESCO untuk mengapresiasi peran sains cahaya dan teknologi fotonik dalam revolusi energi, kedokteran, dan komunikasi optik."
+    },
+    {
+      "month_day": "05-20",
+      "name": "World Bee Day",
+      "source": "UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Lebah Sedunia PBB untuk menyoroti pentingnya peran lebah dan serangga penyerbuk lainnya dalam menjaga ketahanan pangan global dan ekosistem bumi."
+    },
+    {
+      "month_day": "05-21",
+      "name": "World Day for Cultural Diversity",
+      "source": "UNESCO",
+      "type": "peringatan_internasional",
+      "description": "Hari Keberagaman Budaya UNESCO untuk mempromosikan dialog antarbudaya dan menegaskan keberagaman sebagai potensi kekayaan kemanusiaan bersama."
+    },
+    {
+      "month_day": "05-22",
+      "name": "International Day for Biological Diversity",
+      "source": "UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Keanekaragaman Hayati PBB untuk meningkatkan pemahaman dan kesadaran pelestarian keanekaragaman flora dan fauna yang kian terancam punah."
+    },
+    {
+      "month_day": "06-05",
+      "name": "World Environment Day",
+      "source": "UNEP / UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Lingkungan Hidup Sedunia PBB, platform global terbesar untuk menggalang aksi restorasi lahan, pengurangan polusi, dan perlindungan alam."
+    },
+    {
+      "month_day": "06-08",
+      "name": "World Oceans Day",
+      "source": "UN / UNESCO",
+      "type": "peringatan_internasional",
+      "description": "Hari Samudra Sedunia PBB untuk menyadarkan publik bahwa lautan adalah paru-paru bumi penghasil mayoritas oksigen yang harus dilindungi dari eksploitasi berlebih."
+    },
+    {
+      "month_day": "06-20",
+      "name": "World Refugee Day",
+      "source": "UNHCR / UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Pengungsi Sedunia PBB untuk menggalang solidaritas dan menghormati ketangguhan orang-orang yang terpaksa melarikan diri dari konflik bersenjata dan persekusi."
+    },
+    {
+      "month_day": "06-21",
+      "name": "International Day of Yoga",
+      "source": "UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Yoga Internasional PBB untuk mempromosikan gaya hidup seimbang dan kesehatan holistik antara pikiran dan raga."
+    },
+    {
+      "month_day": "07-11",
+      "name": "World Population Day",
+      "source": "UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Kependudukan Sedunia PBB untuk menaruh perhatian pada isu-isu mendesak seputar kependudukan, kemiskinan, ketahanan pangan, dan hak asasi reproduksi."
+    },
+    {
+      "month_day": "07-15",
+      "name": "World Youth Skills Day",
+      "source": "UN / UNESCO",
+      "type": "peringatan_internasional",
+      "description": "Hari Keterampilan Pemuda Sedunia UNESCO & PBB untuk membekali generasi muda dengan keahlian vokasi dan teknis agar siap bersaing di dunia kerja modern."
+    },
+    {
+      "month_day": "08-12",
+      "name": "International Youth Day",
+      "source": "UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Pemuda Internasional PBB untuk merayakan suara, kreativitas, dan inisiatif pemuda sebagai penggerak utama perubahan positif di masyarakat."
+    },
+    {
+      "month_day": "08-19",
+      "name": "World Humanitarian Day",
+      "source": "UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Kemanusiaan Sedunia PBB untuk mengenang para pekerja kemanusiaan yang gugur saat bertugas dan mengapresiasi relawan yang sigap membantu korban krisis."
+    },
+    {
+      "month_day": "09-08",
+      "name": "International Literacy Day",
+      "source": "UNESCO",
+      "type": "peringatan_internasional",
+      "description": "Hari Literasi Internasional UNESCO untuk menegaskan bahwa kemampuan membaca dan menulis adalah hak asasi fundamental serta landasan bagi masyarakat yang adil dan beradab."
+    },
+    {
+      "month_day": "09-15",
+      "name": "International Day of Democracy",
+      "source": "UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Demokrasi Internasional PBB untuk mendorong penegakan prinsip kedaulatan rakyat, pemilu yang transparan, dan penghormatan atas hak asasi manusia."
+    },
+    {
+      "month_day": "09-21",
+      "name": "International Day of Peace",
+      "source": "UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Perdamaian Internasional PBB yang menyerukan penghentian permusuhan dan gencatan senjata 24 jam di seluruh zona konflik di dunia."
+    },
+    {
+      "month_day": "09-28",
+      "name": "Intl Day for Universal Access to Information",
+      "source": "UNESCO",
+      "type": "peringatan_internasional",
+      "description": "Hari Hak untuk Tahu Sedunia UNESCO, mengakui bahwa akses terbuka ke informasi publik adalah kunci akuntabilitas pemerintah dan pemberdayaan masyarakat sipil."
+    },
+    {
+      "month_day": "10-05",
+      "name": "World Teachers' Day",
+      "source": "UNESCO",
+      "type": "peringatan_internasional",
+      "description": "Hari Guru Sedunia UNESCO untuk mengapresiasi dedikasi pengajar di seluruh dunia dalam membentuk masa depan peradaban dan menuntut peningkatan kesejahteraan guru."
+    },
+    {
+      "month_day": "10-10",
+      "name": "World Mental Health Day",
+      "source": "WHO / UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Kesehatan Mental Sedunia WHO untuk mengikis stigma negatif terhadap gangguan psikologis dan mengupayakan akses layanan kesehatan mental yang manusiawi."
+    },
+    {
+      "month_day": "10-11",
+      "name": "International Day of the Girl Child",
+      "source": "UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Anak Perempuan Internasional PBB untuk memberdayakan anak perempuan dan menuntaskan diskriminasi, pernikahan dini, serta kekerasan berbasis gender."
+    },
+    {
+      "month_day": "10-16",
+      "name": "World Food Day",
+      "source": "FAO / UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Pangan Sedunia FAO untuk memperkuat aksi global mengakhiri kelaparan kronis dan menjamin sistem pertanian pangan yang bergizi dan berkelanjutan."
+    },
+    {
+      "month_day": "10-24",
+      "name": "United Nations Day (Hari PBB)",
+      "source": "UN",
+      "type": "peringatan_internasional",
+      "description": "Memperingati mulai berlakunya Piagam PBB pada 24 Oktober 1945, tonggak komitmen bangsa-bangsa dunia untuk menjaga perdamaian dan kerjasama internasional."
+    },
+    {
+      "month_day": "10-27",
+      "name": "World Day for Audiovisual Heritage",
+      "source": "UNESCO",
+      "type": "peringatan_internasional",
+      "description": "Hari Warisan Audiovisual Sedunia UNESCO untuk menyelamatkan dan mengarsipkan dokumen film, rekaman suara, dan siaran televisi bersejarah dari kerusakan."
+    },
+    {
+      "month_day": "11-10",
+      "name": "World Science Day for Peace and Development",
+      "source": "UNESCO",
+      "type": "peringatan_internasional",
+      "description": "Hari Sains Sedunia untuk Perdamaian dan Pembangunan UNESCO, menyoroti peran sentral riset sains yang inklusif dalam menjawab tantangan krisis global."
+    },
+    {
+      "month_day": "11-16",
+      "name": "International Day for Tolerance",
+      "source": "UNESCO",
+      "type": "peringatan_internasional",
+      "description": "Hari Toleransi Internasional UNESCO yang dilahirkan dari Deklarasi Prinsip-Prinsip Toleransi 1995 untuk menangkal kebencian dan diskriminasi rasial/keagamaan."
+    },
+    {
+      "month_day": "11-20",
+      "name": "World Children's Day",
+      "source": "UNICEF / UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Anak Sedunia PBB memperingati Deklarasi dan Konvensi Hak-Hak Anak, memperjuangkan masa depan cerah dan bebas kekerasan bagi setiap anak."
+    },
+    {
+      "month_day": "11-25",
+      "name": "Intl Day for Elimination of Violence against Women",
+      "source": "UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Internasional Penghapusan Kekerasan terhadap Perempuan PBB, menandai dimulainya kampanye 16 Hari Anti Kekerasan Berbasis Gender global."
+    },
+    {
+      "month_day": "12-01",
+      "name": "World AIDS Day",
+      "source": "UNAIDS / UN",
+      "type": "peringatan_internasional",
+      "description": "Hari AIDS Sedunia untuk memperkuat solidaritas global, mengenang para korban, dan mengakhiri diskriminasi terhadap orang yang hidup dengan HIV."
+    },
+    {
+      "month_day": "12-03",
+      "name": "International Day of Persons with Disabilities",
+      "source": "UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Disabilitas Internasional PBB untuk mendorong aksesibilitas tanpa batas, kesetaraan hak, dan integrasi penuh penyandang disabilitas dalam masyarakat."
+    },
+    {
+      "month_day": "12-05",
+      "name": "World Soil Day",
+      "source": "FAO / UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Tanah Sedunia PBB untuk mengkampanyekan pentingnya konservasi tanah yang sehat dan kaya nutrisi bagi kelangsungan rantai makanan bumi."
+    },
+    {
+      "month_day": "12-10",
+      "name": "Human Rights Day (Hari HAM Sedunia)",
+      "source": "UN",
+      "type": "peringatan_internasional",
+      "description": "Memperingati adopsi Deklarasi Universal Hak Asasi Manusia (Universal Declaration of Human Rights) oleh Majelis Umum PBB pada 10 Desember 1948 di Paris."
+    },
+    {
+      "month_day": "12-18",
+      "name": "International Migrants Day",
+      "source": "UN",
+      "type": "peringatan_internasional",
+      "description": "Hari Migran Internasional PBB untuk mengapresiasi kontribusi signifikan kaum migran terhadap perekonomian dunia dan menjamin perlindungan hukum bagi mereka."
+    }
   ]
 }
