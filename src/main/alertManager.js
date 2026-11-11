@@ -28,6 +28,8 @@ function createAlertWindow(activity, triggerReason) {
   const posX = Math.round(screenWidth - winWidth - 24);
   const posY = Math.round(screenHeight - winHeight - 24);
 
+  const alertIconPath = path.join(__dirname, '..', 'renderer', 'assets', 'tempo-logo.png');
+
   alertWindow = new BrowserWindow({
     width: winWidth,
     height: winHeight,
@@ -39,6 +41,7 @@ function createAlertWindow(activity, triggerReason) {
     skipTaskbar: false,
     resizable: false,
     hasShadow: true,
+    icon: alertIconPath,
     webPreferences: {
       preload: path.join(__dirname, '..', '..', 'preload.js'),
       nodeIntegration: false,

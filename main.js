@@ -11,6 +11,8 @@ let miniWidgetWindow = null;
 let scratchpadWindow = null;
 let tray = null;
 
+const appIconPath = path.join(__dirname, 'src', 'renderer', 'assets', 'tempo-logo.png');
+
 function createScratchpadWindow() {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
@@ -31,6 +33,7 @@ function createScratchpadWindow() {
     skipTaskbar: true,
     resizable: false,
     show: false,
+    icon: appIconPath,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -78,6 +81,7 @@ function createMainWindow() {
     minHeight: 640,
     title: 'TEMPO - Desktop Productivity Engine',
     backgroundColor: '#0f172a',
+    icon: appIconPath,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -115,6 +119,7 @@ function createMiniWidget() {
     alwaysOnTop: true,
     skipTaskbar: true,
     resizable: false,
+    icon: appIconPath,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -175,14 +180,16 @@ function createTray() {
 
 function createTrayIcon() {
   const { nativeImage } = require('electron');
-  // Buat icon kanvas 16x16 sederhana
-  const icon = nativeImage.createFromBuffer(
+  if (fs.existsSync(appIconPath)) {
+    return nativeImage.createFromPath(appIconPath).resize({ width: 16, height: 16 });
+  }
+  // Fallback sederhana jika file belum ada
+  return nativeImage.createFromBuffer(
     Buffer.from(
       'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZElEQVQ4T2NkQAP/Gf7//0+mBgYGBgZGIiYyg/kMDGQZgKzBxISBEUkD5mYGBhQUg03BpgmffkZ0jYw4vEAbgw+jGgAWhjA2zMh6kDUwMWJTh4yR1aE7F10PspuJNQDXm8TGJgBqFioL2O6h5gAAAABJRU5ErkJggg==',
       'base64'
     )
   );
-  return icon;
 }
 
 app.whenReady().then(() => {

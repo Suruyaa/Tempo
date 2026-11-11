@@ -25,7 +25,7 @@
         "nsis",
         "portable"
       ],
-      "icon": "src/renderer/assets/icon.ico"
+      "icon": "src/renderer/assets/tempo-logo.png"
     },
     "nsis": {
       "oneClick": false,
