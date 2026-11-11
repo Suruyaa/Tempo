@@ -517,7 +517,10 @@ window.showConfirmDialog = function(title, message, onConfirm, isDanger = true) 
   const btnOk = document.getElementById('btnConfirmOk');
 
   if (!modal) return;
-  if (inputEl) inputEl.classList.add('hidden');
+  if (inputEl) {
+    inputEl.classList.add('hidden');
+    inputEl.style.display = 'none';
+  }
   if (btnCancel) btnCancel.classList.remove('hidden');
   if (titleEl) titleEl.textContent = title || 'Konfirmasi';
   if (msgEl) msgEl.textContent = message || '';
@@ -571,7 +574,10 @@ window.showCustomAlert = function(title, message) {
   const btnOk = document.getElementById('btnConfirmOk');
 
   if (!modal) return;
-  if (inputEl) inputEl.classList.add('hidden');
+  if (inputEl) {
+    inputEl.classList.add('hidden');
+    inputEl.style.display = 'none';
+  }
   if (btnCancel) btnCancel.classList.add('hidden'); // Sembunyikan cancel untuk alert
   if (titleEl) titleEl.textContent = title || 'Informasi';
   if (msgEl) msgEl.textContent = message || '';
@@ -608,6 +614,7 @@ window.showPromptDialog = function(title, message, defaultValue = '', onConfirm)
   if (!modal) return;
   if (inputEl) {
     inputEl.classList.remove('hidden');
+    inputEl.style.display = 'block';
     inputEl.value = defaultValue;
   }
   if (btnCancel) btnCancel.classList.remove('hidden');
@@ -626,7 +633,10 @@ window.showPromptDialog = function(title, message, defaultValue = '', onConfirm)
 
   const closeDialog = () => {
     modal.classList.add('hidden');
-    if (inputEl) inputEl.classList.add('hidden');
+    if (inputEl) {
+      inputEl.classList.add('hidden');
+      inputEl.style.display = 'none';
+    }
     btnOk.onclick = null;
     btnCancel.onclick = null;
   };

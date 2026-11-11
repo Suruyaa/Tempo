@@ -1104,8 +1104,12 @@ body {
   transition: all 0.25s ease;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .modal-backdrop.hidden {
-  display: none;
+  display: none !important;
 }
 
 .modal-card.modal-spacious {
@@ -1449,6 +1453,10 @@ input:focus, select:focus, textarea:focus {
   margin-bottom: 20px;
   outline: none;
   transition: border-color 0.2s;
+}
+
+.confirm-input-field.hidden {
+  display: none !important;
 }
 
 .confirm-input-field:focus {
