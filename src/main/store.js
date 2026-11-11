@@ -137,30 +137,35 @@ class Store {
     );
 
     const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
+    const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0).getTime();
 
     return activities.map(act => {
       const isBlocked = act.dependencies && act.dependencies.some(depId => !completedIds.has(depId));
       
-      // Hitung sisa hari (Horizon)
+      // Hitung sisa hari (Horizon) berdasarkan selisih hari kalender
       let daysRemaining = null;
       let isOverdue = false;
       let horizonLabel = '';
 
       if (act.dueDate) {
-        const due = new Date(`${act.dueDate}T${act.dueTime || '23:59:59'}`);
-        const diffMs = due.getTime() - now.getTime();
-        const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-        const diffHours = Math.ceil(diffMs / (1000 * 60 * 60));
+        const parts = act.dueDate.split('-').map(Number);
+        const dueMidnight = new Date(parts[0], parts[1] - 1, parts[2], 0, 0, 0, 0).getTime();
+        const calendarDayDiff = Math.round((dueMidnight - todayMidnight) / (1000 * 60 * 60 * 24));
 
-        daysRemaining = diffDays;
+        const dueDateTime = new Date(`${act.dueDate}T${act.dueTime || '23:59:59'}`);
+        const diffMs = dueDateTime.getTime() - now.getTime();
+
+        daysRemaining = calendarDayDiff;
+
         if (diffMs < 0 && act.status !== 'completed') {
           isOverdue = true;
           horizonLabel = 'Terlewat (Overdue)';
-        } else if (diffDays <= 0) {
-          horizonLabel = diffHours > 0 ? `Hari H (${diffHours} jam lagi)` : 'Hari H (Sekarang)';
+        } else if (calendarDayDiff <= 0) {
+          horizonLabel = 'Hari H';
+        } else if (calendarDayDiff === 1) {
+          horizonLabel = 'H-1';
         } else {
-          horizonLabel = `H-${diffDays}`;
+          horizonLabel = `H-${calendarDayDiff}`;
         }
       }
 

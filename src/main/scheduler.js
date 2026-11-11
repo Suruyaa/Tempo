@@ -24,7 +24,7 @@ class Scheduler {
   checkReminders() {
     const activities = store.getActivities();
     const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
+    const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0).getTime();
 
     activities.forEach(activity => {
       // Lewati jika sudah selesai
@@ -39,7 +39,10 @@ class Scheduler {
       const diffMs = dueDateTime.getTime() - now.getTime();
       const diffMinutes = Math.floor(diffMs / (1000 * 60));
       const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+      const parts = activity.dueDate.split('-').map(Number);
+      const dueMidnight = new Date(parts[0], parts[1] - 1, parts[2], 0, 0, 0, 0).getTime();
+      const calendarDayDiff = Math.round((dueMidnight - todayMidnight) / (1000 * 60 * 60 * 24));
 
       const horizons = activity.reminderHorizon || ['h-1', 'h-0'];
 
@@ -57,7 +60,7 @@ class Scheduler {
       }
 
       // 2. Cek Peringatan Hari H (h-0) di pagi hari atau hari yang sama
-      if (activity.dueDate === todayStr && horizons.includes('h-0')) {
+      if (calendarDayDiff === 0 && horizons.includes('h-0')) {
         if (!store.isDismissed(activity.id, 'h-0') && diffMinutes > 10) {
           triggerForcedAlert(activity, {
             type: 'h-0',
@@ -70,7 +73,7 @@ class Scheduler {
       }
 
       // 3. Cek Peringatan H-1
-      if (diffDays === 1 && horizons.includes('h-1')) {
+      if (calendarDayDiff === 1 && horizons.includes('h-1')) {
         if (!store.isDismissed(activity.id, 'h-1')) {
           triggerForcedAlert(activity, {
             type: 'h-1',
@@ -83,7 +86,7 @@ class Scheduler {
       }
 
       // 4. Cek Peringatan H-2
-      if (diffDays === 2 && horizons.includes('h-2')) {
+      if (calendarDayDiff === 2 && horizons.includes('h-2')) {
         if (!store.isDismissed(activity.id, 'h-2')) {
           triggerForcedAlert(activity, {
             type: 'h-2',
@@ -96,7 +99,7 @@ class Scheduler {
       }
 
       // 5. Cek Peringatan H-3
-      if (diffDays === 3 && horizons.includes('h-3')) {
+      if (calendarDayDiff === 3 && horizons.includes('h-3')) {
         if (!store.isDismissed(activity.id, 'h-3')) {
           triggerForcedAlert(activity, {
             type: 'h-3',
@@ -109,7 +112,7 @@ class Scheduler {
       }
 
       // 6. Cek Peringatan H-7
-      if (diffDays === 7 && horizons.includes('h-7')) {
+      if (calendarDayDiff === 7 && horizons.includes('h-7')) {
         if (!store.isDismissed(activity.id, 'h-7')) {
           triggerForcedAlert(activity, {
             type: 'h-7',
