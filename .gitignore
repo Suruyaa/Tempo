@@ -20,6 +20,8 @@ dist/
 # User Private Data (Local-First Privacy)
 data/activities.json
 data/logbook.json
+data/scratchpad.json
+data/settings.json
 data/vault/*
 !data/vault/.gitkeep
 !data/activities.sample.json

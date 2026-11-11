@@ -91,9 +91,11 @@ Notifikasi bawaan sistem operasi sering kali gagal menyelamatkan tenggat waktu k
 - Brankas berkas per agenda untuk mengaitkan draft lokal (PDF, Word, Excel, source code) serta tautan dokumen online (Google Docs, Figma, PRD).
 - Terintegrasi langsung dengan notifikasi layar paksa untuk pembukaan berkas satu ketukan.
 
-### 8. Mini Desktop HUD
+### 8. Mini Desktop HUD dengan Animasi Dropdown Interaktif
 - Widget mengambang transparan di sudut layar desktop (`alwaysOnTop: true, level: 'floating'`).
-- Memantau countdown agenda terdekat dan rasio penyelesaian tugas tanpa memakan ruang layar kerja.
+- **Interactive Bouncy Dropdown**: Cukup klik widget HUD atau ikon chevron untuk membuka daftar agenda mendatang dengan animasi spring dropdown yang membal halus (*overshoot bounce*).
+- **One-Click Task Completion**: Centang status selesai tugas langsung dari dropdown HUD tanpa perlu membuka jendela utama.
+- **Cascading Reveal & Status Badges**: Setiap item agenda beranimasi muncul secara berjenjang (*staggered slide-down*) lengkap dengan badge horizon (*Hari H, H-1, H-2*).
 
 ---
 

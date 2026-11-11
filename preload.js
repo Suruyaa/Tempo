@@ -40,6 +40,7 @@ contextBridge.exposeInMainWorld('tempoAPI', {
   // Window Controls
   showMainWindow: () => ipcRenderer.invoke('show-main-window'),
   toggleMiniWidget: (visible) => ipcRenderer.invoke('toggle-mini-widget', visible),
+  setWidgetExpanded: (expanded) => ipcRenderer.invoke('set-widget-expanded', expanded),
 
   // Forced Alert IPC
   completeActivity: (id) => ipcRenderer.invoke('alert-action-complete', id),

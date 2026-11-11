@@ -8,7 +8,7 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
       user-select: none;
     }
 
@@ -17,32 +17,43 @@
       overflow: hidden;
       padding: 6px;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
+      width: 100vw;
       height: 100vh;
     }
 
+    /* Container wrapper */
+    .hud-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Pill Header */
     .widget-pill {
       width: 100%;
-      height: 100%;
-      background: rgba(15, 23, 42, 0.88);
-      border: 1px solid rgba(56, 189, 248, 0.4);
+      height: 52px;
+      background: rgba(13, 21, 39, 0.94);
+      border: 1px solid rgba(56, 189, 248, 0.45);
       border-radius: 14px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 12px rgba(56, 189, 248, 0.15);
-      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 14px rgba(56, 189, 248, 0.2);
+      backdrop-filter: blur(14px);
       display: flex;
       align-items: center;
-      padding: 0 14px;
-      gap: 12px;
+      padding: 0 12px;
+      gap: 10px;
       color: #f8fafc;
       -webkit-app-region: drag;
       cursor: grab;
-      transition: all 0.2s;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .widget-pill:hover {
       border-color: #38bdf8;
-      box-shadow: 0 8px 30px rgba(56, 189, 248, 0.3);
+      box-shadow: 0 8px 30px rgba(56, 189, 248, 0.35);
+      transform: translateY(-1px);
     }
 
     .widget-pill:active {
@@ -51,15 +62,22 @@
 
     .icon-tempo {
       font-size: 16px;
-      background: rgba(56, 189, 248, 0.2);
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
+      background: rgba(56, 189, 248, 0.18);
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      cursor: pointer;
+      -webkit-app-region: no-drag;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .icon-tempo:hover {
+      transform: scale(1.12) rotate(6deg);
     }
 
     .widget-info {
@@ -68,73 +86,424 @@
       flex-direction: column;
       overflow: hidden;
       justify-content: center;
+      cursor: pointer;
+      -webkit-app-region: no-drag;
+      padding: 2px 0;
     }
 
     .widget-title {
-      font-size: 12px;
+      font-size: 12.5px;
       font-weight: 700;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       color: #f1f5f9;
+      letter-spacing: -0.2px;
+      transition: color 0.15s;
+    }
+
+    .widget-pill:hover .widget-title {
+      color: #38bdf8;
     }
 
     .widget-meta {
       display: flex;
       align-items: center;
       gap: 6px;
-      font-size: 10px;
+      font-size: 10.5px;
       color: #94a3b8;
+      margin-top: 2px;
     }
 
     .badge-time {
-      color: #f59e0b;
       font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      background: rgba(245, 158, 11, 0.18);
+      color: #fcd34d;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+    .badge-time.urgent {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.5);
     }
 
-    .btn-open-main {
+    .hud-actions {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
       -webkit-app-region: no-drag;
-      background: #1e293b;
-      border: 1px solid #334155;
+    }
+
+    .btn-toggle-dropdown {
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.25);
       color: #94a3b8;
-      width: 24px;
-      height: 24px;
-      border-radius: 6px;
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .btn-toggle-dropdown:hover {
+      background: rgba(56, 189, 248, 0.2);
+      color: #38bdf8;
+      border-color: #38bdf8;
+      transform: scale(1.12);
+    }
+
+    .btn-toggle-dropdown svg {
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Chevron rotation on open */
+    .hud-container.expanded .btn-toggle-dropdown svg {
+      transform: rotate(180deg);
+      color: #38bdf8;
+    }
+
+    .btn-open-main {
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid #334155;
+      color: #94a3b8;
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
       transition: all 0.2s;
-      flex-shrink: 0;
     }
 
     .btn-open-main:hover {
       background: #38bdf8;
       color: #0f172a;
       border-color: #38bdf8;
+      transform: scale(1.1);
+    }
+
+    /* ============================================================
+       PLAYFUL / BOUNCY DROPDOWN LIST CONTAINER
+       ============================================================ */
+    .widget-dropdown {
+      width: 100%;
+      max-height: 300px;
+      background: rgba(13, 21, 39, 0.96);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      border-radius: 14px;
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.65), 0 0 20px rgba(56, 189, 248, 0.22);
+      backdrop-filter: blur(16px);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      -webkit-app-region: no-drag;
+      transform-origin: top center;
+    }
+
+    /* Animasi Drop Down Lucu & Bouncy (Spring Overshoot) */
+    @keyframes dropDownBounce {
+      0% {
+        opacity: 0;
+        transform: scale(0.88) translateY(-14px);
+      }
+      65% {
+        opacity: 1;
+        transform: scale(1.03) translateY(3px);
+      }
+      85% {
+        transform: scale(0.98) translateY(-1px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    @keyframes dropUpClose {
+      0% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0.9) translateY(-12px);
+      }
+    }
+
+    .hud-container.expanded .widget-dropdown {
+      display: flex;
+      animation: dropDownBounce 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    .hud-container.closing .widget-dropdown {
+      display: flex;
+      animation: dropUpClose 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    .dropdown-header {
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(15, 23, 42, 0.65);
+    }
+
+    .dropdown-header-title {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dropdown-count-badge {
+      font-size: 10px;
+      background: rgba(56, 189, 248, 0.2);
+      color: #7dd3fc;
+      padding: 1px 7px;
+      border-radius: 10px;
+      font-weight: 700;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+
+    /* Scrollable Tasks List */
+    .dropdown-list {
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow-y: auto;
+      max-height: 205px;
+    }
+
+    .dropdown-list::-webkit-scrollbar {
+      width: 4px;
+    }
+    .dropdown-list::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, 0.35);
+      border-radius: 4px;
+    }
+
+    /* Task Item Card with Cascading Slide-In Animation */
+    @keyframes itemSlideDown {
+      0% {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.96);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      animation: itemSlideDown 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    .task-item:hover {
+      background: rgba(30, 41, 59, 0.95);
+      border-color: rgba(56, 189, 248, 0.55);
+      transform: translateX(3px);
+    }
+
+    .task-item.completed {
+      opacity: 0.5;
+    }
+    .task-item.completed .item-title {
+      text-decoration: line-through;
+      color: #64748b;
+    }
+
+    .item-checkbox {
+      width: 18px;
+      height: 18px;
+      border-radius: 6px;
+      border: 1.5px solid #475569;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .item-checkbox:hover {
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.15);
+      transform: scale(1.1);
+    }
+
+    .item-checkbox.checked {
+      background: #10b981;
+      border-color: #10b981;
+      color: #fff;
+    }
+
+    .item-body {
+      flex: 1;
+      min-width: 0;
+      cursor: pointer;
+    }
+
+    .item-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #f1f5f9;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .item-sub {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+      font-size: 9.5px;
+      color: #94a3b8;
+    }
+
+    .item-horizon {
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 9px;
+      background: rgba(56, 189, 248, 0.15);
+      color: #7dd3fc;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .item-horizon.urgent {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.5);
+    }
+
+    .item-horizon.h1 {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fcd34d;
+      border-color: rgba(245, 158, 11, 0.5);
+    }
+
+    /* Empty state */
+    .dropdown-empty {
+      padding: 20px 12px;
+      text-align: center;
+      font-size: 11.5px;
+      color: #64748b;
+    }
+
+    /* Footer */
+    .dropdown-footer {
+      padding: 8px 12px;
+      background: rgba(15, 23, 42, 0.85);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .btn-dashboard-link {
+      background: transparent;
+      border: none;
+      color: #38bdf8;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+
+    .btn-dashboard-link:hover {
+      color: #7dd3fc;
+      transform: translateX(2px);
     }
   </style>
 </head>
 <body>
-  <div class="widget-pill">
-    <div class="icon-tempo" style="padding: 2px;">
-      <img src="assets/tempo-logo.png" alt="Tempo" style="width: 22px; height: 22px; object-fit: contain; filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.4));">
-    </div>
-    <div class="widget-info">
-      <div id="wTitle" class="widget-title">Memuat agenda...</div>
-      <div class="widget-meta">
-        <span id="wCountdown" class="badge-time">H-0</span>
-        <span id="wProgress">0/0 selesai</span>
+  <div id="hudContainer" class="hud-container">
+    <!-- PILL HEADER BAR -->
+    <div class="widget-pill" id="widgetPill">
+      <div class="icon-tempo" id="btnLogo" title="Buka / Tutup Daftar Tugas">
+        <img src="assets/tempo-logo.png" alt="Tempo" style="width: 22px; height: 22px; object-fit: contain; filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.5));">
+      </div>
+      
+      <div class="widget-info" id="widgetInfo" title="Klik untuk lihat daftar agenda">
+        <div id="wTitle" class="widget-title">Memuat agenda...</div>
+        <div class="widget-meta">
+          <span id="wCountdown" class="badge-time">H-0</span>
+          <span id="wProgress">0/0 selesai</span>
+        </div>
+      </div>
+
+      <div class="hud-actions">
+        <!-- Chevron toggle dropdown -->
+        <button id="btnToggleDropdown" class="btn-toggle-dropdown" title="Buka / Tutup Daftar Agenda">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
+        <!-- Open main dashboard -->
+        <button id="btnOpen" class="btn-open-main" title="Buka Dashboard Penuh">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </button>
       </div>
     </div>
-    <button id="btnOpen" class="btn-open-main" title="Buka Dashboard Penuh">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-        <polyline points="15 3 21 3 21 9"></polyline>
-        <line x1="10" y1="14" x2="21" y2="3"></line>
-      </svg>
-    </button>
+
+    <!-- BOUNCY DROPDOWN AGENDA LIST -->
+    <div id="widgetDropdown" class="widget-dropdown">
+      <div class="dropdown-header">
+        <div class="dropdown-header-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 11l3 3L22 4"></path>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+          </svg>
+          Agenda &amp; Tenggat
+        </div>
+        <span id="dropdownCount" class="dropdown-count-badge">0 Tugas</span>
+      </div>
+
+      <div id="dropdownList" class="dropdown-list">
+        <!-- Items rendered dynamically -->
+      </div>
+
+      <div class="dropdown-footer">
+        <button id="btnFooterDashboard" class="btn-dashboard-link">
+          <span>⚡ Buka Dashboard Penuh</span>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+        <span style="font-size: 9.5px; color: #64748b;">TEMPO HUD</span>
+      </div>
+    </div>
   </div>
 
   <script src="widget.js"></script>

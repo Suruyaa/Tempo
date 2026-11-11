@@ -104,7 +104,7 @@ function createMiniWidget() {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: screenWidth } = primaryDisplay.workAreaSize;
 
-  const wWidth = 320;
+  const wWidth = 330;
   const wHeight = 64;
   const posX = Math.round(screenWidth - wWidth - 20);
   const posY = 20;
@@ -441,6 +441,27 @@ ipcMain.handle('get-settings', () => {
 
 ipcMain.handle('update-settings', (event, updates) => {
   return store.updateSettings(updates);
+});
+
+ipcMain.handle('set-widget-expanded', (event, expanded) => {
+  if (miniWidgetWindow && !miniWidgetWindow.isDestroyed()) {
+    const primaryDisplay = screen.getPrimaryDisplay();
+    const { height: screenHeight } = primaryDisplay.workAreaSize;
+    const bounds = miniWidgetWindow.getBounds();
+    const wWidth = 330;
+    const targetHeight = expanded ? 370 : 64;
+    let targetY = bounds.y;
+    if (expanded && targetY + targetHeight > screenHeight) {
+      targetY = Math.max(10, screenHeight - targetHeight - 10);
+    }
+    miniWidgetWindow.setBounds({
+      x: bounds.x,
+      y: targetY,
+      width: wWidth,
+      height: targetHeight
+    });
+  }
+  return true;
 });
 
 function broadcastActivitiesUpdated() {
