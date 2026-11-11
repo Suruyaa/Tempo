@@ -1,9 +1,29 @@
+const { app } = require('electron');
 const fs = require('fs');
 const path = require('path');
 
-const DATA_DIR = path.join(__dirname, '..', '..', 'data');
+const BUNDLED_DATA_DIR = path.join(__dirname, '..', '..', 'data');
+
+function resolveDataDir() {
+  if (app && typeof app.getPath === 'function') {
+    try {
+      // Pada aplikasi ter-package (production build/installer),
+      // direktori app.asar bersifat read-only. Seluruh data yang ditulis harus di userData.
+      if (app.isPackaged) {
+        return path.join(app.getPath('userData'), 'data');
+      }
+      return BUNDLED_DATA_DIR;
+    } catch (e) {
+      // Fallback
+    }
+  }
+  return BUNDLED_DATA_DIR;
+}
+
+const DATA_DIR = resolveDataDir();
 const ACTIVITIES_FILE = path.join(DATA_DIR, 'activities.json');
-const SAMPLE_FILE = path.join(DATA_DIR, 'activities.sample.json');
+const SAMPLE_FILE = path.join(BUNDLED_DATA_DIR, 'activities.sample.json');
+const BUNDLED_HOLIDAYS_FILE = path.join(BUNDLED_DATA_DIR, 'holidays.json');
 const HOLIDAYS_FILE = path.join(DATA_DIR, 'holidays.json');
 const VAULT_DIR = path.join(DATA_DIR, 'vault');
 
@@ -16,13 +36,21 @@ const DEFAULT_SETTINGS = {
   alertVolume: 0.8
 };
 
+function ensureDirectories() {
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    if (!fs.existsSync(VAULT_DIR)) {
+      fs.mkdirSync(VAULT_DIR, { recursive: true });
+    }
+  } catch (err) {
+    console.error('[Store] Error creating directories:', err);
+  }
+}
+
 // Pastikan direktori data dan vault ada
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
-if (!fs.existsSync(VAULT_DIR)) {
-  fs.mkdirSync(VAULT_DIR, { recursive: true });
-}
+ensureDirectories();
 
 class Store {
   constructor() {
@@ -32,13 +60,27 @@ class Store {
   }
 
   ensureDataFile() {
+    ensureDirectories();
     if (!fs.existsSync(ACTIVITIES_FILE)) {
       if (fs.existsSync(SAMPLE_FILE)) {
-        fs.copyFileSync(SAMPLE_FILE, ACTIVITIES_FILE);
+        try {
+          fs.copyFileSync(SAMPLE_FILE, ACTIVITIES_FILE);
+        } catch (e) {
+          fs.writeFileSync(ACTIVITIES_FILE, JSON.stringify([], null, 2), 'utf-8');
+        }
       } else {
         fs.writeFileSync(ACTIVITIES_FILE, JSON.stringify([], null, 2), 'utf-8');
       }
     }
+  }
+
+  getVaultDir(activityId) {
+    ensureDirectories();
+    const dir = activityId ? path.join(VAULT_DIR, activityId) : VAULT_DIR;
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    return dir;
   }
 
   getActivities() {
@@ -107,6 +149,17 @@ class Store {
       }
     });
     this.saveActivities(list);
+
+    // Hapus folder vault agenda jika ada
+    try {
+      const actVaultDir = path.join(VAULT_DIR, id);
+      if (fs.existsSync(actVaultDir)) {
+        fs.rmSync(actVaultDir, { recursive: true, force: true });
+      }
+    } catch (e) {
+      // ignore
+    }
+
     return list.length < beforeCount;
   }
 
@@ -130,6 +183,10 @@ class Store {
     try {
       if (fs.existsSync(HOLIDAYS_FILE)) {
         const raw = fs.readFileSync(HOLIDAYS_FILE, 'utf-8');
+        return JSON.parse(raw);
+      }
+      if (fs.existsSync(BUNDLED_HOLIDAYS_FILE)) {
+        const raw = fs.readFileSync(BUNDLED_HOLIDAYS_FILE, 'utf-8');
         return JSON.parse(raw);
       }
     } catch (err) {

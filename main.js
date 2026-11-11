@@ -400,11 +400,7 @@ ipcMain.handle('add-vault-file', async (event, activityId) => {
 
   const srcPath = result.filePaths[0];
   const fileName = path.basename(srcPath);
-  const destDir = path.join(__dirname, 'data', 'vault', activityId);
-
-  if (!fs.existsSync(destDir)) {
-    fs.mkdirSync(destDir, { recursive: true });
-  }
+  const destDir = store.getVaultDir(activityId);
 
   const destPath = path.join(destDir, fileName);
   fs.copyFileSync(srcPath, destPath);
