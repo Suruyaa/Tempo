@@ -14,14 +14,23 @@ contextBridge.exposeInMainWorld('tempoAPI', {
   addVaultFile: (activityId) => ipcRenderer.invoke('add-vault-file', activityId),
   openExternal: (url) => ipcRenderer.invoke('alert-action-open-link', url),
 
+  // Logbook Jurnal (.MD export & import)
+  getLogbookEntries: () => ipcRenderer.invoke('get-logbook-entries'),
+  addLogbookEntry: (entry) => ipcRenderer.invoke('add-logbook-entry', entry),
+  deleteLogbookEntry: (id) => ipcRenderer.invoke('delete-logbook-entry', id),
+  exportLogbookMD: () => ipcRenderer.invoke('export-logbook-md'),
+  importLogbookMD: () => ipcRenderer.invoke('import-logbook-md'),
+
   // Holidays
   getHolidays: () => ipcRenderer.invoke('get-holidays'),
 
-  // Export
+  // Export ICS
   exportICS: () => ipcRenderer.invoke('export-ics'),
 
-  // Companion Mobile Server & QR Code
-  getCompanionInfo: () => ipcRenderer.invoke('get-companion-info'),
+  // Scratchpad
+  getScratchpad: () => ipcRenderer.invoke('get-scratchpad'),
+  saveScratchpad: (content) => ipcRenderer.invoke('save-scratchpad', content),
+  toggleScratchpad: (visible) => ipcRenderer.invoke('toggle-scratchpad', visible),
 
   // Window Controls
   showMainWindow: () => ipcRenderer.invoke('show-main-window'),

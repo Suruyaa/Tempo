@@ -36,6 +36,7 @@
       color: #f8fafc;
       animation: alertPulse 2s infinite ease-in-out;
       -webkit-app-region: drag;
+      position: relative;
     }
 
     @keyframes alertPulse {
@@ -204,6 +205,71 @@
       background: rgba(255, 255, 255, 0.05);
       color: #cbd5e1;
     }
+
+    /* Anti-Procrastination Gate Overlay */
+    .procrastination-gate {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.98);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      z-index: 50;
+      -webkit-app-region: no-drag;
+      animation: fadeIn 0.15s ease-out;
+    }
+
+    .procrastination-gate.hidden {
+      display: none;
+    }
+
+    .gate-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #ef4444;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .gate-desc {
+      font-size: 12px;
+      color: #cbd5e1;
+      margin-bottom: 12px;
+    }
+
+    .gate-puzzle {
+      background: #1e293b;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 12px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #38bdf8;
+    }
+
+    .gate-input {
+      background: #0f172a;
+      border: 1px solid #38bdf8;
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #fff;
+      font-size: 14px;
+      width: 100%;
+      text-align: center;
+      outline: none;
+      margin-bottom: 12px;
+    }
+
+    .gate-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+    }
   </style>
 </head>
 <body>
@@ -213,7 +279,12 @@
         <span class="badge-forced">⚡ TEMPO ALERT</span>
         <span id="badgeHorizon" class="badge-horizon">H-1</span>
       </div>
-      <button id="soundToggle" class="btn-sound-toggle" title="Matikan Bunyi">🔊</button>
+      <button id="soundToggle" class="btn-sound-toggle" title="Matikan Bunyi">
+        <svg id="soundIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+      </button>
     </div>
 
     <div class="alert-body">
@@ -223,9 +294,30 @@
     </div>
 
     <div class="alert-actions">
-      <button id="btnComplete" class="btn btn-complete">✓ Selesai</button>
-      <button id="btnSnooze" class="btn btn-snooze">⏱️ Tunda 15m</button>
+      <button id="btnComplete" class="btn btn-complete">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        Selesai
+      </button>
+      <button id="btnSnooze" class="btn btn-snooze">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        Tunda 15m
+      </button>
       <button id="btnDismiss" class="btn btn-dismiss">Tutup</button>
+    </div>
+
+    <!-- Anti-Procrastination Gate (Tantangan Pembatal Alarm) -->
+    <div id="gateOverlay" class="procrastination-gate hidden">
+      <div class="gate-title" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        TANTANGAN ANTI-MENUNDA
+      </div>
+      <p class="gate-desc">Tugas ini berprioritas tinggi! Selesaikan tantangan konfirmasi di bawah sebelum menunda/menutup alarm:</p>
+      <div id="gatePuzzleText" class="gate-puzzle">Hitung: 15 + 18 = ?</div>
+      <input type="text" id="gateInput" class="gate-input" placeholder="Ketik jawaban di sini..." autocomplete="off">
+      <div class="gate-actions">
+        <button id="btnGateCancel" class="btn btn-secondary" style="flex: 1;">Batal Tutup</button>
+        <button id="btnGateConfirm" class="btn btn-primary" style="flex: 1; background: #ef4444;">Buka Kunci</button>
+      </div>
     </div>
   </div>
 

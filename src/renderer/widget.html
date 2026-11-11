@@ -118,7 +118,11 @@
 </head>
 <body>
   <div class="widget-pill">
-    <div class="icon-tempo">⚡</div>
+    <div class="icon-tempo">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+      </svg>
+    </div>
     <div class="widget-info">
       <div id="wTitle" class="widget-title">Memuat agenda...</div>
       <div class="widget-meta">
@@ -126,7 +130,13 @@
         <span id="wProgress">0/0 selesai</span>
       </div>
     </div>
-    <button id="btnOpen" class="btn-open-main" title="Buka Dashboard Penuh">↗</button>
+    <button id="btnOpen" class="btn-open-main" title="Buka Dashboard Penuh">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+        <polyline points="15 3 21 3 21 9"></polyline>
+        <line x1="10" y1="14" x2="21" y2="3"></line>
+      </svg>
+    </button>
   </div>
 
   <script src="widget.js"></script>

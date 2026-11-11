@@ -15,7 +15,7 @@ async function updateWidget() {
     // Ambil tugas yang belum selesai dan memiliki dueDate paling dekat
     const pendingList = list.filter(a => a.status !== 'completed');
     if (pendingList.length === 0) {
-      document.getElementById('wTitle').textContent = 'Semua agenda beres! 🎉';
+      document.getElementById('wTitle').textContent = 'Semua agenda selesai!';
       document.getElementById('wCountdown').textContent = '100%';
       return;
     }

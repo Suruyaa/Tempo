@@ -1,4 +1,4 @@
-// TEMPO Main Renderer Controller
+// TEMPO Main Controller (Sidebar Layout & State Manager)
 let activitiesCache = [];
 let holidaysCache = null;
 let currentTab = 'agenda';
@@ -8,33 +8,69 @@ let agendaView = null;
 let calendarView = null;
 let nodeGraph = null;
 let vaultView = null;
-let qrcodeModal = null;
+let logbookView = null;
+
+const tabMeta = {
+  agenda: {
+    icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`,
+    title: 'Agenda & To-Do List',
+    subtitle: 'Pantau tenggat waktu, countdown H-x, dan eksekusi tugas'
+  },
+  calendar: {
+    icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+    title: 'Kalender & Libur Nasional',
+    subtitle: 'Pemetaan Hari Libur Resmi Indonesia (SKB 3 Menteri) & agenda pribadi'
+  },
+  nodegraph: {
+    icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
+    title: 'Graph View (Obsidian)',
+    subtitle: 'Peta ketergantungan relasi tugas (Point A ➜ Point B) dengan simulasi partikel'
+  },
+  vault: {
+    icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>`,
+    title: 'Activity Vault',
+    subtitle: 'Brankas berkas draft dan tautan online yang terhubung ke notifikasi paksa'
+  },
+  logbook: {
+    icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`,
+    title: 'Logbook & Jurnal Produktivitas',
+    subtitle: 'Dokumentasikan refleksi harian dan riwayat tugas dengan ekspor/impor Markdown (.md)'
+  }
+};
 
 document.addEventListener('DOMContentLoaded', async () => {
   agendaView = new window.AgendaView('tab-agenda');
   calendarView = new window.CalendarView('tab-calendar');
   nodeGraph = new window.NodeGraph('tab-nodegraph');
   vaultView = new window.VaultView('tab-vault');
-  qrcodeModal = new window.QRCodeModal();
+  logbookView = new window.LogbookView('tab-logbook');
 
   window.agendaView = agendaView;
   window.calendarView = calendarView;
   window.nodeGraph = nodeGraph;
   window.vaultView = vaultView;
+  window.logbookView = logbookView;
 
-  // Inisialisasi navigasi tab
-  setupTabs();
+  // Inisialisasi navigasi sidebar
+  setupSidebarNavigation();
 
-  // Inisialisasi tombol header
-  setupHeaderActions();
+  // Inisialisasi tombol power tools
+  setupPowerTools();
 
   // Inisialisasi form modal tambah agenda
   setupModalForm();
 
+  // Handle window resize untuk Obsidian canvas
+  window.addEventListener('resize', () => {
+    if (currentTab === 'nodegraph' && nodeGraph) {
+      nodeGraph.setupCanvas();
+    }
+  });
+
   // Muat data awal
   await refreshApp();
 
-  // Dengar event jika ada update aktivitas dari background
+  // Dengar update dari background process
   if (window.tempoAPI && window.tempoAPI.onActivitiesUpdated) {
     window.tempoAPI.onActivitiesUpdated(async () => {
       await refreshApp();
@@ -49,27 +85,32 @@ async function refreshApp() {
       holidaysCache = await window.tempoAPI.getHolidays();
     }
 
+    // Update pending counter badge di sidebar
+    const pendingCount = activitiesCache.filter(a => a.status !== 'completed').length;
+    const badge = document.getElementById('badgePendingCount');
+    if (badge) badge.textContent = pendingCount;
+
     // Perbarui data ke masing-masing komponen
-    calendarView.setData(holidaysCache, activitiesCache);
-    nodeGraph.setData(activitiesCache);
-    vaultView.setData(activitiesCache);
+    if (calendarView) calendarView.setData(holidaysCache, activitiesCache);
+    if (nodeGraph) nodeGraph.setData(activitiesCache);
+    if (vaultView) vaultView.setData(activitiesCache);
 
     // Render tab aktif saat ini
     renderActiveTab();
 
-    // Perbarui dropdown prasyarat di modal tambah agenda
-    updateDependencySelectOptions();
+    // Perbarui checklist prasyarat di modal tambah agenda
+    updateDependencyChecklist();
   } catch (err) {
     console.error('Error refreshing app:', err);
   }
 }
 window.refreshApp = refreshApp;
 
-function setupTabs() {
-  const tabs = document.querySelectorAll('.nav-tab');
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const target = tab.getAttribute('data-tab');
+function setupSidebarNavigation() {
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const target = item.getAttribute('data-tab');
       switchTab(target);
     });
   });
@@ -78,62 +119,81 @@ function setupTabs() {
 function switchTab(tabName) {
   currentTab = tabName;
 
-  // Update styling tombol tab
-  document.querySelectorAll('.nav-tab').forEach(t => {
-    if (t.getAttribute('data-tab') === tabName) {
-      t.classList.add('active');
+  // Update styling tombol sidebar
+  document.querySelectorAll('.nav-item').forEach(item => {
+    if (item.getAttribute('data-tab') === tabName) {
+      item.classList.add('active');
     } else {
-      t.classList.remove('active');
+      item.classList.remove('active');
     }
   });
 
   // Update visibility pane
-  document.querySelectorAll('.tab-pane').forEach(p => {
-    if (p.id === `tab-${tabName}`) {
-      p.classList.add('active');
+  document.querySelectorAll('.tab-pane').forEach(pane => {
+    if (pane.id === `tab-${tabName}`) {
+      pane.classList.add('active');
     } else {
-      p.classList.remove('active');
+      pane.classList.remove('active');
     }
   });
+
+  // Update Top Breadcrumb Title & Subtitle
+  const meta = tabMeta[tabName] || tabMeta.agenda;
+  const iconContainer = document.getElementById('viewBreadcrumbIcon');
+  if (iconContainer) iconContainer.innerHTML = meta.icon;
+  const titleEl = document.getElementById('viewBreadcrumbTitle');
+  if (titleEl) titleEl.textContent = meta.title;
+  const subEl = document.getElementById('viewBreadcrumbSubtitle');
+  if (subEl) subEl.textContent = meta.subtitle;
 
   renderActiveTab();
 }
 
 function renderActiveTab() {
-  if (currentTab === 'agenda') {
+  if (currentTab === 'agenda' && agendaView) {
     agendaView.render(activitiesCache);
-  } else if (currentTab === 'calendar') {
+  } else if (currentTab === 'calendar' && calendarView) {
     calendarView.render();
-  } else if (currentTab === 'nodegraph') {
+  } else if (currentTab === 'nodegraph' && nodeGraph) {
     nodeGraph.render();
-  } else if (currentTab === 'vault') {
+  } else if (currentTab === 'vault' && vaultView) {
     vaultView.render();
+  } else if (currentTab === 'logbook' && logbookView) {
+    logbookView.render();
   }
 }
 
-function setupHeaderActions() {
-  // Tombol Tes Notifikasi Paksa
-  document.getElementById('btnTestAlert').addEventListener('click', async () => {
+function setupPowerTools() {
+  // Tombol Buka Scratchpad (Sidebar & Header)
+  const openScratchpad = () => window.tempoAPI.toggleScratchpad(true);
+  document.getElementById('btnOpenScratchpad')?.addEventListener('click', openScratchpad);
+  document.getElementById('btnHeaderScratchpad')?.addEventListener('click', openScratchpad);
+
+  // Tombol Tes Notifikasi Paksa (Bypass DND)
+  document.getElementById('btnTestAlert')?.addEventListener('click', async () => {
     const act = activitiesCache[0];
     await window.tempoAPI.testForcedAlert(act ? act.id : null);
   });
 
-  // Tombol Toggle Mini HUD
-  document.getElementById('btnToggleMini').addEventListener('click', async () => {
+  // Tombol Toggle Mini Floating HUD
+  document.getElementById('btnToggleMini')?.addEventListener('click', async () => {
     await window.tempoAPI.toggleMiniWidget();
   });
 
-  // Tombol Sambungkan HP (QR Code)
-  document.getElementById('btnMobileSync').addEventListener('click', () => {
-    qrcodeModal.show();
-  });
-
   // Tombol Ekspor Kalender .ICS
-  document.getElementById('btnExportICS').addEventListener('click', async () => {
+  document.getElementById('btnExportICS')?.addEventListener('click', async () => {
     const res = await window.tempoAPI.exportICS();
     if (res.success) {
-      alert(`✓ Kalender TEMPO berhasil diekspor ke:\n${res.filePath}\n\nAnda dapat mengimpor file ini ke Google Calendar atau kalender HP!`);
+      window.showCustomAlert(
+        'Kalender Berhasil Diekspor',
+        `Berkas kalender standar .ICS berhasil disimpan di:\n${res.filePath}\n\nAnda dapat mengimpor file ini langsung ke Google Calendar atau kalender ponsel Anda!`
+      );
     }
+  });
+
+  // Tombol Buka Modal Tambah Agenda di Header
+  document.getElementById('btnOpenAddModal')?.addEventListener('click', () => {
+    window.openAddActivityModal();
   });
 }
 
@@ -145,16 +205,16 @@ function setupModalForm() {
 
   const hideModal = () => modal.classList.add('hidden');
   const showModal = () => {
+    updateDependencyChecklist();
     modal.classList.remove('hidden');
-    // Set default tanggal hari ini jika kosong
     const dateInput = document.getElementById('inputDueDate');
     if (!dateInput.value) {
       dateInput.value = new Date().toISOString().split('T')[0];
     }
   };
 
-  btnClose.onclick = hideModal;
-  btnCancel.onclick = hideModal;
+  if (btnClose) btnClose.onclick = hideModal;
+  if (btnCancel) btnCancel.onclick = hideModal;
 
   window.openAddActivityModal = showModal;
   window.openAddActivityWithDate = (dateStr) => {
@@ -162,68 +222,242 @@ function setupModalForm() {
     showModal();
   };
 
-  form.onsubmit = async (e) => {
-    e.preventDefault();
+  if (form) {
+    form.onsubmit = async (e) => {
+      e.preventDefault();
 
-    const title = document.getElementById('inputTitle').value;
-    const description = document.getElementById('inputDesc').value;
-    const dueDate = document.getElementById('inputDueDate').value;
-    const dueTime = document.getElementById('inputDueTime').value;
-    const priority = document.getElementById('selectPriority').value;
-    const category = document.getElementById('inputCategory').value;
+      const title = document.getElementById('inputTitle').value;
+      const description = document.getElementById('inputDesc').value;
+      const dueDate = document.getElementById('inputDueDate').value;
+      const dueTime = document.getElementById('inputDueTime').value;
+      const priority = document.getElementById('selectPriority').value;
+      const category = document.getElementById('inputCategory').value;
+      const quickLink = document.getElementById('inputQuickLink').value;
 
-    // Ambil horizon yang dicentang
-    const horizonChecks = form.querySelectorAll('input[name="horizon"]:checked');
-    const reminderHorizon = Array.from(horizonChecks).map(c => c.value);
+      // Horizon checkboxes
+      const horizonChecks = form.querySelectorAll('input[name="horizon"]:checked');
+      const reminderHorizon = Array.from(horizonChecks).map(c => c.value);
 
-    // Ambil dependencies
-    const selectDep = document.getElementById('selectDependency');
-    const dependencies = Array.from(selectDep.selectedOptions).map(o => o.value);
+      // Dependency checkboxes
+      const depChecks = form.querySelectorAll('input[name="dependency"]:checked');
+      const dependencies = Array.from(depChecks).map(c => c.value);
 
-    await window.tempoAPI.addActivity({
-      title,
-      description,
-      dueDate,
-      dueTime,
-      priority,
-      category,
-      reminderHorizon,
-      dependencies,
-      status: 'pending'
-    });
+      const vault = { links: [], files: [] };
+      if (quickLink && quickLink.trim().length > 0) {
+        vault.links.push({ title: 'Tautan Pendukung', url: quickLink.trim() });
+      }
 
-    form.reset();
-    hideModal();
-    await refreshApp();
-  };
+      await window.tempoAPI.addActivity({
+        title,
+        description,
+        dueDate,
+        dueTime,
+        priority,
+        category,
+        reminderHorizon,
+        dependencies,
+        vault,
+        status: 'pending'
+      });
+
+      form.reset();
+      hideModal();
+      await refreshApp();
+    };
+  }
 }
 
-function updateDependencySelectOptions() {
-  const select = document.getElementById('selectDependency');
-  if (!select) return;
+function updateDependencyChecklist() {
+  const container = document.getElementById('dependencyListContainer');
+  if (!container) return;
 
-  const currentSelection = Array.from(select.selectedOptions).map(o => o.value);
-  select.innerHTML = activitiesCache.map(a => `
-    <option value="${a.id}" ${currentSelection.includes(a.id) ? 'selected' : ''}>
-      ${a.title} (${a.dueDate || '-'})
-    </option>
+  if (activitiesCache.length === 0) {
+    container.innerHTML = '<div style="font-size: 11px; color: #64748b; font-style: italic; padding: 4px;">Belum ada tugas lain untuk dijadikan prasyarat.</div>';
+    return;
+  }
+
+  container.innerHTML = activitiesCache.map(a => `
+    <label class="dep-check-item">
+      <input type="checkbox" name="dependency" value="${a.id}">
+      <span style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+        ${escapeHtml(a.title)} (${a.dueDate || '-'})
+      </span>
+    </label>
   `).join('');
 }
 
-// Global Helpers
-window.deleteActivityPrompt = async (id) => {
-  if (confirm('Apakah Anda yakin ingin menghapus agenda ini?')) {
-    await window.tempoAPI.deleteActivity(id);
-    await refreshApp();
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/* ============================================================
+   CUSTOM IN-APP CONFIRMATION & ALERT SYSTEM (DARK THEME)
+   ============================================================ */
+window.showConfirmDialog = function(title, message, onConfirm, isDanger = true) {
+  const modal = document.getElementById('modalConfirmDialog');
+  const titleEl = document.getElementById('confirmDialogTitle');
+  const msgEl = document.getElementById('confirmDialogMessage');
+  const inputEl = document.getElementById('confirmDialogInput');
+  const iconWrap = document.getElementById('confirmDialogIcon');
+  const btnCancel = document.getElementById('btnConfirmCancel');
+  const btnOk = document.getElementById('btnConfirmOk');
+
+  if (!modal) return;
+  if (inputEl) inputEl.classList.add('hidden');
+  if (btnCancel) btnCancel.classList.remove('hidden');
+  if (titleEl) titleEl.textContent = title || 'Konfirmasi';
+  if (msgEl) msgEl.textContent = message || '';
+
+  if (isDanger) {
+    iconWrap.className = 'confirm-icon-wrap';
+    iconWrap.innerHTML = `
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+        <line x1="12" y1="9" x2="12" y2="13"></line>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
+    `;
+    btnOk.className = 'btn btn-danger-glow';
+    btnOk.textContent = 'Ya, Hapus';
+  } else {
+    iconWrap.className = 'confirm-icon-wrap icon-info';
+    iconWrap.innerHTML = `
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="16" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+      </svg>
+    `;
+    btnOk.className = 'btn btn-primary btn-glow';
+    btnOk.textContent = 'Ya, Lanjutkan';
   }
+
+  const closeDialog = () => {
+    modal.classList.add('hidden');
+    btnOk.onclick = null;
+    btnCancel.onclick = null;
+  };
+
+  btnCancel.onclick = closeDialog;
+  btnOk.onclick = async () => {
+    closeDialog();
+    if (typeof onConfirm === 'function') await onConfirm();
+  };
+
+  modal.classList.remove('hidden');
 };
 
-window.promptAddVaultLink = async (activityId) => {
-  const title = prompt('Masukkan Judul / Nama Tautan (misal: Draft Google Docs):');
-  if (!title) return;
-  const url = prompt('Masukkan URL lengkap (misal: https://docs.google.com/...):');
-  if (!url) return;
+window.showCustomAlert = function(title, message) {
+  const modal = document.getElementById('modalConfirmDialog');
+  const titleEl = document.getElementById('confirmDialogTitle');
+  const msgEl = document.getElementById('confirmDialogMessage');
+  const inputEl = document.getElementById('confirmDialogInput');
+  const iconWrap = document.getElementById('confirmDialogIcon');
+  const btnCancel = document.getElementById('btnConfirmCancel');
+  const btnOk = document.getElementById('btnConfirmOk');
 
-  await window.tempoAPI.addVaultLink(activityId, { title, url });
-  await refreshApp();
+  if (!modal) return;
+  if (inputEl) inputEl.classList.add('hidden');
+  if (btnCancel) btnCancel.classList.add('hidden'); // Sembunyikan cancel untuk alert
+  if (titleEl) titleEl.textContent = title || 'Informasi';
+  if (msgEl) msgEl.textContent = message || '';
+
+  iconWrap.className = 'confirm-icon-wrap icon-success';
+  iconWrap.innerHTML = `
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg>
+  `;
+  btnOk.className = 'btn btn-primary btn-glow';
+  btnOk.textContent = 'Mengerti';
+
+  const closeDialog = () => {
+    modal.classList.add('hidden');
+    btnOk.onclick = null;
+    btnCancel.onclick = null;
+  };
+
+  btnOk.onclick = closeDialog;
+  modal.classList.remove('hidden');
+};
+
+window.showPromptDialog = function(title, message, defaultValue = '', onConfirm) {
+  const modal = document.getElementById('modalConfirmDialog');
+  const titleEl = document.getElementById('confirmDialogTitle');
+  const msgEl = document.getElementById('confirmDialogMessage');
+  const inputEl = document.getElementById('confirmDialogInput');
+  const iconWrap = document.getElementById('confirmDialogIcon');
+  const btnCancel = document.getElementById('btnConfirmCancel');
+  const btnOk = document.getElementById('btnConfirmOk');
+
+  if (!modal) return;
+  if (inputEl) {
+    inputEl.classList.remove('hidden');
+    inputEl.value = defaultValue;
+  }
+  if (btnCancel) btnCancel.classList.remove('hidden');
+  if (titleEl) titleEl.textContent = title;
+  if (msgEl) msgEl.textContent = message;
+
+  iconWrap.className = 'confirm-icon-wrap icon-info';
+  iconWrap.innerHTML = `
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 20h9"></path>
+      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+    </svg>
+  `;
+  btnOk.className = 'btn btn-primary btn-glow';
+  btnOk.textContent = 'Simpan';
+
+  const closeDialog = () => {
+    modal.classList.add('hidden');
+    if (inputEl) inputEl.classList.add('hidden');
+    btnOk.onclick = null;
+    btnCancel.onclick = null;
+  };
+
+  btnCancel.onclick = closeDialog;
+  btnOk.onclick = async () => {
+    const val = inputEl ? inputEl.value : '';
+    closeDialog();
+    if (typeof onConfirm === 'function') await onConfirm(val);
+  };
+
+  modal.classList.remove('hidden');
+  setTimeout(() => { if (inputEl) inputEl.focus(); }, 60);
+};
+
+window.deleteActivityPrompt = (id) => {
+  window.showConfirmDialog(
+    'Hapus Agenda',
+    'Apakah Anda yakin ingin menghapus agenda ini? Tindakan ini akan menghapus semua file vault dan rantai node prasyarat yang terhubung.',
+    async () => {
+      await window.tempoAPI.deleteActivity(id);
+      await refreshApp();
+    },
+    true
+  );
+};
+
+window.promptAddVaultLink = (activityId) => {
+  window.showPromptDialog(
+    'Tambah Tautan Dokumen',
+    'Masukkan judul tautan dokumen:',
+    '',
+    (title) => {
+      if (!title || !title.trim()) return;
+      window.showPromptDialog(
+        'Masukkan URL Dokumen',
+        'Masukkan URL web lengkap (misal Google Docs / Notion):',
+        'https://',
+        async (url) => {
+          if (!url || !url.trim()) return;
+          await window.tempoAPI.addVaultLink(activityId, { title: title.trim(), url: url.trim() });
+          await refreshApp();
+        }
+      );
+    }
+  );
 };

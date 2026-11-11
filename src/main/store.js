@@ -7,6 +7,9 @@ const SAMPLE_FILE = path.join(DATA_DIR, 'activities.sample.json');
 const HOLIDAYS_FILE = path.join(DATA_DIR, 'holidays.json');
 const VAULT_DIR = path.join(DATA_DIR, 'vault');
 
+const SCRATCHPAD_FILE = path.join(DATA_DIR, 'scratchpad.json');
+const LOGBOOK_FILE = path.join(DATA_DIR, 'logbook.json');
+
 // Pastikan direktori data dan vault ada
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -192,6 +195,172 @@ class Store {
 
   isDismissed(id, horizon) {
     return this.dismissedHorizonAlerts.has(`${id}:${horizon}`);
+  }
+
+  getScratchpad() {
+    try {
+      if (fs.existsSync(SCRATCHPAD_FILE)) {
+        return fs.readFileSync(SCRATCHPAD_FILE, 'utf-8');
+      }
+    } catch (err) {
+      console.error('[Store] Error reading scratchpad:', err);
+    }
+    return '';
+  }
+
+  saveScratchpad(content) {
+    try {
+      fs.writeFileSync(SCRATCHPAD_FILE, content, 'utf-8');
+      return true;
+    } catch (err) {
+      console.error('[Store] Error saving scratchpad:', err);
+      return false;
+    }
+  }
+
+  getLogbookEntries() {
+    try {
+      if (fs.existsSync(LOGBOOK_FILE)) {
+        const raw = fs.readFileSync(LOGBOOK_FILE, 'utf-8');
+        return JSON.parse(raw);
+      }
+    } catch (err) {
+      console.error('[Store] Error reading logbook:', err);
+    }
+    // Default initial sample entries
+    const initial = [
+      {
+        id: 'log-1',
+        title: 'Review Awal Sprint & Refleksi Roadmap',
+        date: '2026-11-10',
+        content: 'Hari ini berhasil merampungkan struktur data awal dan setup repository. Fokus berikutnya adalah menyelesaikan draft dokumen dan sinkronisasi ke stakeholder.',
+        tags: ['Refleksi', 'Sprint']
+      }
+    ];
+    this.saveLogbookEntries(initial);
+    return initial;
+  }
+
+  saveLogbookEntries(entries) {
+    try {
+      fs.writeFileSync(LOGBOOK_FILE, JSON.stringify(entries, null, 2), 'utf-8');
+      return true;
+    } catch (err) {
+      console.error('[Store] Error saving logbook:', err);
+      return false;
+    }
+  }
+
+  addLogbookEntry(entry) {
+    const list = this.getLogbookEntries();
+    const newEntry = {
+      id: 'log-' + Date.now(),
+      title: entry.title || 'Catatan Jurnal',
+      date: entry.date || new Date().toISOString().split('T')[0],
+      content: entry.content || '',
+      tags: entry.tags || ['Umum'],
+      createdAt: new Date().toISOString()
+    };
+    list.unshift(newEntry);
+    this.saveLogbookEntries(list);
+    return newEntry;
+  }
+
+  deleteLogbookEntry(id) {
+    let list = this.getLogbookEntries();
+    list = list.filter(e => e.id !== id);
+    this.saveLogbookEntries(list);
+    return true;
+  }
+
+  exportLogbookMarkdown() {
+    const entries = this.getLogbookEntries();
+    const activities = this.getActivities();
+    const completed = activities.filter(a => a.status === 'completed');
+
+    let md = `# TEMPO Logbook & Jurnal Produktivitas\n\n`;
+    md += `*Diekspor pada: ${new Date().toLocaleString('id-ID')}*\n\n`;
+
+    md += `## Catatan Jurnal & Refleksi Harian\n\n`;
+    if (entries.length === 0) {
+      md += `*Belum ada entri catatan jurnal.*\n\n`;
+    } else {
+      entries.forEach((e) => {
+        md += `### ${e.title}\n`;
+        md += `- **Tanggal:** ${e.date || '-'}\n`;
+        if (e.tags && e.tags.length > 0) md += `- **Tags:** ${e.tags.join(', ')}\n`;
+        md += `\n${e.content || ''}\n\n---\n\n`;
+      });
+    }
+
+    md += `## Riwayat Tugas Terselesaikan\n\n`;
+    if (completed.length === 0) {
+      md += `*Belum ada tugas yang diselesaikan.*\n\n`;
+    } else {
+      completed.forEach((c, idx) => {
+        md += `- [x] **${c.title}** (${c.category || 'Umum'}) - Selesai: ${c.completedAt ? new Date(c.completedAt).toLocaleDateString('id-ID') : '-'}\n`;
+      });
+    }
+
+    return md;
+  }
+
+  importLogbookMarkdown(markdownText) {
+    if (!markdownText) return { success: false, count: 0 };
+    const list = this.getLogbookEntries();
+    let importedCount = 0;
+
+    // Parsing sections split by '### '
+    const sections = markdownText.split(/^###\s+/m);
+    
+    sections.forEach((sec, idx) => {
+      if (idx === 0) return; // skip header before first ###
+      const lines = sec.trim().split('\n');
+      const title = lines[0].trim();
+      let date = new Date().toISOString().split('T')[0];
+      let tags = ['Imported'];
+      let contentLines = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        if (line.startsWith('- **Tanggal:**')) {
+          date = line.replace('- **Tanggal:**', '').trim();
+        } else if (line.startsWith('- **Tags:**')) {
+          const rawTags = line.replace('- **Tags:**', '').trim();
+          tags = rawTags.split(',').map(t => t.trim());
+        } else if (line.trim() === '---') {
+          continue;
+        } else {
+          contentLines.push(line);
+        }
+      }
+
+      list.unshift({
+        id: 'log-imp-' + Date.now() + '-' + idx,
+        title: title || 'Catatan Impor',
+        date,
+        tags,
+        content: contentLines.join('\n').trim(),
+        createdAt: new Date().toISOString()
+      });
+      importedCount++;
+    });
+
+    // Jika format markdown bukan heading ### melainkan plain text/bullet, simpan sebagai 1 entri
+    if (importedCount === 0 && markdownText.trim().length > 0) {
+      list.unshift({
+        id: 'log-imp-' + Date.now(),
+        title: 'Dokumen Impor Markdown',
+        date: new Date().toISOString().split('T')[0],
+        tags: ['Imported'],
+        content: markdownText.trim(),
+        createdAt: new Date().toISOString()
+      });
+      importedCount = 1;
+    }
+
+    this.saveLogbookEntries(list);
+    return { success: true, count: importedCount };
   }
 }
 

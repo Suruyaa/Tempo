@@ -1,15 +1,74 @@
-const { app, BrowserWindow, ipcMain, screen, dialog, shell, Menu, Tray } = require('electron');
+const { app, BrowserWindow, ipcMain, screen, dialog, shell, Menu, Tray, globalShortcut } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const store = require('./src/main/store');
 const scheduler = require('./src/main/scheduler');
 const { setupAlertIPC, triggerForcedAlert } = require('./src/main/alertManager');
-const { startCompanionServer, getLocalURL, getLocalIP } = require('./src/server/app');
 const { generateICS } = require('./src/main/icsExporter');
 
 let mainWindow = null;
 let miniWidgetWindow = null;
+let scratchpadWindow = null;
 let tray = null;
+
+function createScratchpadWindow() {
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
+
+  const sWidth = 560;
+  const sHeight = 380;
+  const posX = Math.round((screenWidth - sWidth) / 2);
+  const posY = Math.round((screenHeight - sHeight) / 3);
+
+  scratchpadWindow = new BrowserWindow({
+    width: sWidth,
+    height: sHeight,
+    x: posX,
+    y: posY,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    resizable: false,
+    show: false,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  });
+
+  scratchpadWindow.setAlwaysOnTop(true, 'screen-saver');
+  scratchpadWindow.setVisibleOnAllWorkspaces(true);
+  scratchpadWindow.loadFile(path.join(__dirname, 'src', 'renderer', 'scratchpad.html'));
+
+  scratchpadWindow.on('blur', () => {
+    // Sembunyikan saat klik di luar
+    if (scratchpadWindow && scratchpadWindow.isVisible()) {
+      scratchpadWindow.hide();
+    }
+  });
+}
+
+function toggleScratchpad(forceState) {
+  if (!scratchpadWindow || scratchpadWindow.isDestroyed()) {
+    createScratchpadWindow();
+  }
+
+  if (forceState === true) {
+    scratchpadWindow.show();
+    scratchpadWindow.focus();
+  } else if (forceState === false) {
+    scratchpadWindow.hide();
+  } else {
+    if (scratchpadWindow.isVisible()) {
+      scratchpadWindow.hide();
+    } else {
+      scratchpadWindow.show();
+      scratchpadWindow.focus();
+    }
+  }
+}
 
 function createMainWindow() {
   mainWindow = new BrowserWindow({
@@ -129,17 +188,28 @@ function createTrayIcon() {
 app.whenReady().then(() => {
   createMainWindow();
   createMiniWidget();
+  createScratchpadWindow();
   createTray();
+
+  // Daftarkan Global Keyboard Shortcut untuk Quick Scratchpad
+  // Bisa ditekan dari aplikasi mana pun di Windows (Alt+Space atau Ctrl+Shift+Space)
+  try {
+    globalShortcut.register('Alt+Space', () => {
+      toggleScratchpad();
+    });
+    globalShortcut.register('CommandOrControl+Shift+Space', () => {
+      toggleScratchpad();
+    });
+    console.log('[TEMPO] Shortcut Global Alt+Space & Ctrl+Shift+Space terdaftar!');
+  } catch (err) {
+    console.error('Gagal mendaftarkan global shortcut:', err);
+  }
 
   // Inisialisasi Alert IPC
   setupAlertIPC(mainWindow);
 
   // Jalankan background scheduler
   scheduler.start();
-
-  // Jalankan Companion Server lokal untuk akses HP via Wi-Fi
-  const companionUrl = startCompanionServer();
-  console.log(`[TEMPO] Companion Server siap di: ${companionUrl}`);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -150,6 +220,7 @@ app.whenReady().then(() => {
 
 app.on('before-quit', () => {
   app.isQuitting = true;
+  globalShortcut.unregisterAll();
   scheduler.stop();
 });
 
@@ -207,12 +278,45 @@ ipcMain.handle('toggle-mini-widget', (event, visible) => {
   return true;
 });
 
-ipcMain.handle('get-companion-info', () => {
-  return {
-    url: getLocalURL(),
-    ip: getLocalIP(),
-    port: 4321
-  };
+ipcMain.handle('get-logbook-entries', () => {
+  return store.getLogbookEntries();
+});
+
+ipcMain.handle('add-logbook-entry', (event, entry) => {
+  return store.addLogbookEntry(entry);
+});
+
+ipcMain.handle('delete-logbook-entry', (event, id) => {
+  return store.deleteLogbookEntry(id);
+});
+
+ipcMain.handle('export-logbook-md', async () => {
+  const mdContent = store.exportLogbookMarkdown();
+  const { filePath } = await dialog.showSaveDialog(mainWindow, {
+    title: 'Ekspor Logbook Jurnal (.md)',
+    defaultPath: 'tempo-jurnal-logbook.md',
+    filters: [{ name: 'Markdown Document', extensions: ['md'] }]
+  });
+
+  if (filePath) {
+    fs.writeFileSync(filePath, mdContent, 'utf-8');
+    return { success: true, filePath };
+  }
+  return { success: false };
+});
+
+ipcMain.handle('import-logbook-md', async () => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: 'Impor Dokumen Markdown (.md) ke Logbook',
+    properties: ['openFile'],
+    filters: [{ name: 'Markdown Files', extensions: ['md', 'markdown', 'txt'] }]
+  });
+
+  if (result.canceled || result.filePaths.length === 0) return { success: false, count: 0 };
+
+  const content = fs.readFileSync(result.filePaths[0], 'utf-8');
+  const importRes = store.importLogbookMarkdown(content);
+  return importRes;
 });
 
 ipcMain.handle('export-ics', async () => {
@@ -299,6 +403,19 @@ ipcMain.handle('add-vault-file', async (event, activityId) => {
   const updated = store.updateActivity(activityId, { vault: act.vault });
   broadcastActivitiesUpdated();
   return updated;
+});
+
+ipcMain.handle('get-scratchpad', () => {
+  return store.getScratchpad();
+});
+
+ipcMain.handle('save-scratchpad', (event, content) => {
+  return store.saveScratchpad(content);
+});
+
+ipcMain.handle('toggle-scratchpad', (event, visible) => {
+  toggleScratchpad(visible);
+  return true;
 });
 
 function broadcastActivitiesUpdated() {
