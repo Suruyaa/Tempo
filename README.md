@@ -27,7 +27,16 @@ Notifikasi bawaan sistem operasi sering kali gagal menyelamatkan tenggat waktu k
 
 ## 🌟 Fitur Utama (Core Features)
 
-### 1. Forced Notification Engine (Bypass Windows Do Not Disturb)
+### 1. Agenda, Horizon Warning & Penyuntingan Mandiri
+- Kelola jadwal dengan batas waktu presisi, kategori tag, skala prioritas, dan dependensi prasyarat antar tugas.
+- **Penyuntingan Fleksibel**: Anda dapat menyunting kembali agenda kapan saja dengan **klik kanan** pada kartu tugas atau menekan **tombol titik 3 (`...`)**.
+- **Horizon Peringatan Bertingkat**:
+  - **H-7**: Peringatan awal 1 minggu sebelumnya.
+  - **H-3 & H-2**: Fase persiapan berkas.
+  - **H-1**: Peringatan intensif malam sebelum tenggat.
+  - **Hari H & Jam H**: Notifikasi layar penuh tepat waktu.
+
+### 2. Forced Notification Engine (Bypass Windows Do Not Disturb)
 - Memunculkan jendela darurat sekunder berstatus `alwaysOnTop: true, level: 'screen-saver'` di layer teratas layar Anda.
 - **Synthesizer Alarm Mandiri**: Bunyi peringatan dinamis dihasilkan secara langsung melalui Web Audio API tanpa memerlukan koneksi internet.
 - **Anti-Procrastination Math Challenge**: Untuk tugas berkategori *Mendesak (Urgent)* atau *Hari H*, tombol penunda/penutup alarm dilindungi oleh tantangan perhitungan matematika cepat untuk memaksa otak Anda sadar dan tidak menunda pekerjaan.
@@ -41,16 +50,19 @@ Notifikasi bawaan sistem operasi sering kali gagal menyelamatkan tenggat waktu k
   - **Timeline Flowchart**: Tata letak berurutan berdasarkan kronologi tenggat waktu.
 - **Node Inspector Drawer**: Klik sembarang node untuk memfokuskan kamera, menginspeksi detail, membuka link vault, atau menandai selesai secara real-time.
 
-### 3. Logbook & Jurnal Produktivitas (Markdown Native)
-- Ruang pencatatan refleksi harian, evaluasi sprint kerja, dan log pencapaian tugas.
-- **Ekspor ke `.MD`**: Kompilasi seluruh entri jurnal dan riwayat tugas selesai ke dalam format standar Markdown untuk diarsipkan di aplikasi catatan pilihan Anda, Notion, atau repositori dokumen.
+### 3. Logbook & Jurnal Produktivitas (Modern Canvas & Markdown Native)
+- Ruang pencatatan refleksi harian, evaluasi sprint kerja, dan log pencapaian tugas dengan pengalaman menulis kanvas yang bersih, lapang, dan bebas distraksi.
+- **Penyuntingan Langsung**: Edit entri jurnal yang telah tersimpan kapan saja via klik kanan (`contextmenu`) atau tombol titik 3 (`...`).
+- **Ekspor ke `.MD`**: Kompilasi seluruh entri jurnal dan riwayat tugas selesai ke dalam format standar Markdown untuk diarsipkan di aplikasi catatan personal pilihan Anda atau repositori dokumen.
 - **Impor dari `.MD`**: Baca kembali berkas Markdown eksternal dan masukkan secara otomatis ke dalam database lokal TEMPO.
 - **Auto Milestone Logger**: Setiap tugas yang ditandai selesai otomatis tercatat ke dalam feed pencapaian logbook.
 
 ### 4. Quick Scratchpad (Global Shortcut: `Alt + Space`)
-- Catat ide kilat, draft teks, atau tautan penting dari aplikasi apa pun di Windows tanpa perlu membuka jendela utama.
+- Catat ide kilat, draft teks, atau tautan penting dari aplikasi apa pun tanpa perlu membuka jendela utama.
 - Cukup tekan kombinasi keyboard **`Alt + Space`** atau **`Ctrl + Shift + Space`** untuk memunculkan floating notepad transparan.
-- Mendukung fitur **1-Click Convert to Agenda (H-1)** untuk mengubah catatan cepat menjadi agenda resmi.
+- **Dual Conversion Workflow**:
+  - 🚀 **Ke Agenda**: Ubah catatan kilat menjadi agenda kerja resmi dengan tenggat waktu otomatis.
+  - 📖 **Ke Jurnal**: Pindahkan catatan kilat langsung ke entri logbook refleksi harian.
 - Auto-save instan setiap kali Anda mengetik.
 
 ### 5. Horizon Peringatan Bertingkat (Countdown H-x)
@@ -128,18 +140,34 @@ npm start
 
 ---
 
-## 📦 Membuat File Installer Windows (`.exe`)
+## 📦 Membuat File Installer (Windows & Linux)
 
-TEMPO telah dikonfigurasikan menggunakan `electron-builder` untuk menghasilkan installer resmi Windows yang siap pakai:
+TEMPO telah dikonfigurasikan menggunakan `electron-builder` untuk menghasilkan installer resmi multi-platform yang siap pakai:
 
+### Windows (`.exe` NSIS & Portable)
 ```bash
-# Membuat installer NSIS dan versi Portable
+# Membuat installer NSIS dan versi Portable Windows
+npm run dist:win
+# atau cukup jalankan:
 npm run dist
 ```
-
 Hasil kompilasi akan otomatis tersedia di direktori `dist/`:
 - `dist/Tempo Setup 1.0.0.exe` — File installer resmi Windows dengan wizard instalasi dan desktop shortcut.
 - `dist/Tempo 1.0.0.exe` — Versi Portable siap pakai tanpa perlu proses instalasi.
+
+### Linux (`.AppImage` & `.deb`)
+```bash
+# Membuat paket distribusi Linux
+npm run dist:linux
+```
+Hasil kompilasi akan otomatis tersedia di direktori `dist/`:
+- `dist/Tempo-1.0.0.AppImage` — Paket mandiri (standalone executable) universal untuk seluruh distro Linux (Ubuntu, Debian, Fedora, Arch, dll).
+- `dist/tempo_1.0.0_amd64.deb` — Paket instalasi berbasis Debian/Ubuntu.
+
+Untuk mengompilasi semua target sekaligus:
+```bash
+npm run dist:all
+```
 
 ---
 

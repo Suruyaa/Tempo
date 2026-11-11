@@ -17,6 +17,7 @@ contextBridge.exposeInMainWorld('tempoAPI', {
   // Logbook Jurnal (.MD export & import)
   getLogbookEntries: () => ipcRenderer.invoke('get-logbook-entries'),
   addLogbookEntry: (entry) => ipcRenderer.invoke('add-logbook-entry', entry),
+  updateLogbookEntry: (id, updates) => ipcRenderer.invoke('update-logbook-entry', { id, updates }),
   deleteLogbookEntry: (id) => ipcRenderer.invoke('delete-logbook-entry', id),
   exportLogbookMD: () => ipcRenderer.invoke('export-logbook-md'),
   importLogbookMD: () => ipcRenderer.invoke('import-logbook-md'),

@@ -197,16 +197,36 @@ function setupPowerTools() {
   });
 }
 
+let editingActivityId = null;
+
 function setupModalForm() {
   const modal = document.getElementById('modalAddActivity');
   const btnClose = document.getElementById('btnCloseModalAdd');
   const btnCancel = document.getElementById('btnCancelAdd');
   const form = document.getElementById('formAddActivity');
+  const modalTitleEl = modal?.querySelector('.modal-title-wrap h2');
+  const modalSubEl = modal?.querySelector('.modal-subtitle');
+  const submitBtnEl = form?.querySelector('button[type="submit"]');
 
-  const hideModal = () => modal.classList.add('hidden');
-  const showModal = () => {
-    updateDependencyChecklist();
+  const hideModal = () => {
+    modal.classList.add('hidden');
+    editingActivityId = null;
+  };
+
+  const showModal = (isEdit = false) => {
+    updateDependencyChecklist(editingActivityId);
     modal.classList.remove('hidden');
+
+    if (isEdit) {
+      if (modalTitleEl) modalTitleEl.textContent = 'Edit Agenda & Tenggat Waktu';
+      if (modalSubEl) modalSubEl.textContent = 'Perbarui rincian tugas, prioritas, jadwal, dan notifikasi berjangka';
+      if (submitBtnEl) submitBtnEl.textContent = 'Simpan Perubahan';
+    } else {
+      if (modalTitleEl) modalTitleEl.textContent = 'Catat Agenda & Deadline Baru';
+      if (modalSubEl) modalSubEl.textContent = 'Tetapkan tenggat waktu, rantai tugas prasyarat, dan notifikasi berjangka';
+      if (submitBtnEl) submitBtnEl.textContent = 'Simpan Agenda';
+    }
+
     const dateInput = document.getElementById('inputDueDate');
     if (!dateInput.value) {
       dateInput.value = new Date().toISOString().split('T')[0];
@@ -216,23 +236,66 @@ function setupModalForm() {
   if (btnClose) btnClose.onclick = hideModal;
   if (btnCancel) btnCancel.onclick = hideModal;
 
-  window.openAddActivityModal = showModal;
+  window.openAddActivityModal = () => {
+    editingActivityId = null;
+    form.reset();
+    showModal(false);
+  };
+
   window.openAddActivityWithDate = (dateStr) => {
+    editingActivityId = null;
+    form.reset();
     document.getElementById('inputDueDate').value = dateStr;
-    showModal();
+    showModal(false);
+  };
+
+  window.openEditActivityModal = (id) => {
+    const act = activitiesCache.find(a => a.id === id);
+    if (!act) return;
+
+    editingActivityId = id;
+    form.reset();
+
+    document.getElementById('inputTitle').value = act.title || '';
+    document.getElementById('inputDesc').value = act.description || '';
+    document.getElementById('inputDueDate').value = act.dueDate || '';
+    document.getElementById('inputDueTime').value = act.dueTime || '15:00';
+    document.getElementById('selectPriority').value = act.priority || 'normal';
+    document.getElementById('inputCategory').value = act.category || 'Umum';
+
+    // Set horizon checkboxes
+    const horizons = act.reminderHorizon || [];
+    form.querySelectorAll('input[name="horizon"]').forEach(cb => {
+      cb.checked = horizons.includes(cb.value);
+    });
+
+    // Set quickLink if any
+    const firstLink = act.vault && act.vault.links && act.vault.links[0];
+    const linkInput = document.getElementById('inputQuickLink');
+    if (linkInput) {
+      linkInput.value = firstLink ? firstLink.url : '';
+    }
+
+    showModal(true);
+
+    // Set dependency checkboxes
+    const deps = act.dependencies || [];
+    form.querySelectorAll('input[name="dependency"]').forEach(cb => {
+      cb.checked = deps.includes(cb.value);
+    });
   };
 
   if (form) {
     form.onsubmit = async (e) => {
       e.preventDefault();
 
-      const title = document.getElementById('inputTitle').value;
-      const description = document.getElementById('inputDesc').value;
+      const title = document.getElementById('inputTitle').value.trim();
+      const description = document.getElementById('inputDesc').value.trim();
       const dueDate = document.getElementById('inputDueDate').value;
       const dueTime = document.getElementById('inputDueTime').value;
       const priority = document.getElementById('selectPriority').value;
-      const category = document.getElementById('inputCategory').value;
-      const quickLink = document.getElementById('inputQuickLink').value;
+      const category = document.getElementById('inputCategory').value.trim() || 'Umum';
+      const quickLink = document.getElementById('inputQuickLink').value.trim();
 
       // Horizon checkboxes
       const horizonChecks = form.querySelectorAll('input[name="horizon"]:checked');
@@ -242,23 +305,47 @@ function setupModalForm() {
       const depChecks = form.querySelectorAll('input[name="dependency"]:checked');
       const dependencies = Array.from(depChecks).map(c => c.value);
 
-      const vault = { links: [], files: [] };
-      if (quickLink && quickLink.trim().length > 0) {
-        vault.links.push({ title: 'Tautan Pendukung', url: quickLink.trim() });
-      }
+      if (editingActivityId) {
+        // UPDATE MODE
+        const existing = activitiesCache.find(a => a.id === editingActivityId);
+        const vault = existing ? (existing.vault || { links: [], files: [] }) : { links: [], files: [] };
+        if (quickLink) {
+          if (!vault.links) vault.links = [];
+          const exists = vault.links.find(l => l.url === quickLink);
+          if (!exists) vault.links.unshift({ title: 'Tautan Pendukung', url: quickLink });
+        }
 
-      await window.tempoAPI.addActivity({
-        title,
-        description,
-        dueDate,
-        dueTime,
-        priority,
-        category,
-        reminderHorizon,
-        dependencies,
-        vault,
-        status: 'pending'
-      });
+        await window.tempoAPI.updateActivity(editingActivityId, {
+          title,
+          description,
+          dueDate,
+          dueTime,
+          priority,
+          category,
+          reminderHorizon,
+          dependencies,
+          vault
+        });
+      } else {
+        // CREATE MODE
+        const vault = { links: [], files: [] };
+        if (quickLink && quickLink.length > 0) {
+          vault.links.push({ title: 'Tautan Pendukung', url: quickLink });
+        }
+
+        await window.tempoAPI.addActivity({
+          title,
+          description,
+          dueDate,
+          dueTime,
+          priority,
+          category,
+          reminderHorizon,
+          dependencies,
+          vault,
+          status: 'pending'
+        });
+      }
 
       form.reset();
       hideModal();
@@ -267,16 +354,18 @@ function setupModalForm() {
   }
 }
 
-function updateDependencyChecklist() {
+function updateDependencyChecklist(excludeId = null) {
   const container = document.getElementById('dependencyListContainer');
   if (!container) return;
 
-  if (activitiesCache.length === 0) {
+  const validOptions = activitiesCache.filter(a => a.id !== excludeId);
+
+  if (validOptions.length === 0) {
     container.innerHTML = '<div style="font-size: 11px; color: #64748b; font-style: italic; padding: 4px;">Belum ada tugas lain untuk dijadikan prasyarat.</div>';
     return;
   }
 
-  container.innerHTML = activitiesCache.map(a => `
+  container.innerHTML = validOptions.map(a => `
     <label class="dep-check-item">
       <input type="checkbox" name="dependency" value="${a.id}">
       <span style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">

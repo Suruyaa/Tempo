@@ -290,11 +290,21 @@ ipcMain.handle('get-logbook-entries', () => {
 });
 
 ipcMain.handle('add-logbook-entry', (event, entry) => {
-  return store.addLogbookEntry(entry);
+  const newEntry = store.addLogbookEntry(entry);
+  broadcastActivitiesUpdated();
+  return newEntry;
+});
+
+ipcMain.handle('update-logbook-entry', (event, { id, updates }) => {
+  const updated = store.updateLogbookEntry(id, updates);
+  broadcastActivitiesUpdated();
+  return updated;
 });
 
 ipcMain.handle('delete-logbook-entry', (event, id) => {
-  return store.deleteLogbookEntry(id);
+  const res = store.deleteLogbookEntry(id);
+  broadcastActivitiesUpdated();
+  return res;
 });
 
 ipcMain.handle('export-logbook-md', async () => {

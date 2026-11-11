@@ -8,7 +8,9 @@
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder --win"
+    "dist": "electron-builder --win",
+    "dist:linux": "electron-builder --linux",
+    "dist:all": "electron-builder -wl"
   },
   "devDependencies": {
     "electron": "^45.2.3",
@@ -26,6 +28,16 @@
         "portable"
       ],
       "icon": "src/renderer/assets/tempo-logo.png"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "src/renderer/assets/tempo-logo.png",
+      "category": "Utility",
+      "synopsis": "Desktop Productivity Engine with Unmissable Reminders",
+      "description": "TEMPO Desktop Productivity Engine with forced screen-saver alerts that pierce through Do Not Disturb, interactive graph view, markdown logbook, and activity vault."
     },
     "nsis": {
       "oneClick": false,

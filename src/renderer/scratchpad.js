@@ -2,7 +2,8 @@
 const noteInput = document.getElementById('noteInput');
 const btnClose = document.getElementById('btnClose');
 const btnCopy = document.getElementById('btnCopy');
-const btnConvert = document.getElementById('btnConvertToAgenda');
+const btnConvertAgenda = document.getElementById('btnConvertToAgenda');
+const btnConvertLogbook = document.getElementById('btnConvertToLogbook');
 const saveStatus = document.getElementById('saveStatus');
 
 let saveTimeout = null;
@@ -52,7 +53,7 @@ btnCopy.addEventListener('click', () => {
 });
 
 // Convert first line / text into a new Agenda (H-1)
-btnConvert.addEventListener('click', async () => {
+btnConvertAgenda?.addEventListener('click', async () => {
   const text = noteInput.value.trim();
   if (!text) return;
 
@@ -77,9 +78,35 @@ btnConvert.addEventListener('click', async () => {
     status: 'pending'
   });
 
-  btnConvert.textContent = '✓ Berhasil Dibuat!';
+  const origText = btnConvertAgenda.innerHTML;
+  btnConvertAgenda.textContent = '✓ Jadi Agenda!';
   setTimeout(() => {
-    btnConvert.textContent = '➕ Jadikan Agenda (H-1)';
+    btnConvertAgenda.innerHTML = origText;
+    window.tempoAPI.toggleScratchpad(false);
+  }, 1000);
+});
+
+// Convert note to Logbook Journal Entry
+btnConvertLogbook?.addEventListener('click', async () => {
+  const text = noteInput.value.trim();
+  if (!text) return;
+
+  const lines = text.split('\n');
+  const title = lines[0].substring(0, 80) || 'Catatan Kilat';
+  const content = lines.slice(1).join('\n') || text;
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  await window.tempoAPI.addLogbookEntry({
+    title,
+    content,
+    date: todayStr,
+    tags: ['Scratchpad', 'Ide']
+  });
+
+  const origText = btnConvertLogbook.innerHTML;
+  btnConvertLogbook.textContent = '✓ Tersimpan di Jurnal!';
+  setTimeout(() => {
+    btnConvertLogbook.innerHTML = origText;
     window.tempoAPI.toggleScratchpad(false);
   }, 1000);
 });

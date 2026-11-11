@@ -266,6 +266,20 @@ class Store {
     return newEntry;
   }
 
+  updateLogbookEntry(id, updates) {
+    const list = this.getLogbookEntries();
+    const index = list.findIndex(e => e.id === id);
+    if (index === -1) return null;
+
+    list[index] = {
+      ...list[index],
+      ...updates,
+      updatedAt: new Date().toISOString()
+    };
+    this.saveLogbookEntries(list);
+    return list[index];
+  }
+
   deleteLogbookEntry(id) {
     let list = this.getLogbookEntries();
     list = list.filter(e => e.id !== id);

@@ -137,7 +137,7 @@ class AgendaView {
     const vaultFileCount = (act.vault && act.vault.files) ? act.vault.files.length : 0;
 
     return `
-      <div class="agenda-card ${prioClass} ${isDone ? 'completed' : ''}">
+      <div class="agenda-card ${prioClass} ${isDone ? 'completed' : ''}" oncontextmenu="window.openEditActivityModal('${act.id}'); return false;">
         <div class="task-checkbox-custom ${isDone ? 'checked' : ''}" onclick="window.tempoAPI.toggleComplete('${act.id}')" title="${isDone ? 'Tandai belum selesai' : 'Tandai selesai'}">
           ${isDone ? `
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -148,7 +148,7 @@ class AgendaView {
 
         <div class="task-main-details">
           <div class="task-top-row">
-            <span class="task-title-text">${this.escapeHtml(act.title)}</span>
+            <span class="task-title-text" onclick="window.openEditActivityModal('${act.id}')" style="cursor: pointer;" title="Klik untuk edit agenda">${this.escapeHtml(act.title)}</span>
             <span class="${horizonBadgeClass}">${act.horizonLabel || 'Tenggat'}</span>
             ${act.isBlocked ? `
               <span class="badge-blocked">
@@ -183,6 +183,13 @@ class AgendaView {
         </div>
 
         <div class="task-action-btns">
+          <button class="btn btn-secondary btn-sm" onclick="window.openEditActivityModal('${act.id}')" title="Edit Agenda & Deadline (atau klik kanan kartu)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="1"></circle>
+              <circle cx="19" cy="12" r="1"></circle>
+              <circle cx="5" cy="12" r="1"></circle>
+            </svg>
+          </button>
           <button class="btn btn-secondary btn-sm" onclick="window.tempoAPI.testForcedAlert('${act.id}')" title="Uji Coba Notifikasi Paksa untuk Tugas Ini">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
             Tes Alert
