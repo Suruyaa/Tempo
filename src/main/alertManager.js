@@ -6,8 +6,9 @@ let alertWindow = null;
 let currentAlertData = null;
 
 function createAlertWindow(activity, triggerReason) {
-  // Simpan data alert aktif
-  currentAlertData = { activity, triggerReason };
+  // Simpan data alert aktif beserta pengaturan suara
+  const settings = store.getSettings();
+  currentAlertData = { activity, triggerReason, settings };
 
   // Jika window sudah ada, perbarui datanya dan bawa ke paling depan
   if (alertWindow && !alertWindow.isDestroyed()) {

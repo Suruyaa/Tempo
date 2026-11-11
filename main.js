@@ -435,6 +435,14 @@ ipcMain.handle('toggle-scratchpad', (event, visible) => {
   return true;
 });
 
+ipcMain.handle('get-settings', () => {
+  return store.getSettings();
+});
+
+ipcMain.handle('update-settings', (event, updates) => {
+  return store.updateSettings(updates);
+});
+
 function broadcastActivitiesUpdated() {
   if (mainWindow && !mainWindow.isDestroyed()) {
     mainWindow.webContents.send('activities-updated');

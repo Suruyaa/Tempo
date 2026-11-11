@@ -60,6 +60,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Inisialisasi form modal tambah agenda
   setupModalForm();
 
+  // Inisialisasi event modal suara notifikasi
+  setupSoundSettingsEvents();
+
   // Handle window resize untuk physics graph canvas
   window.addEventListener('resize', () => {
     if (currentTab === 'nodegraph' && nodeGraph) {
@@ -191,10 +194,123 @@ function setupPowerTools() {
     }
   });
 
+  // Tombol Buka Pengaturan Suara Notifikasi Alarm
+  document.getElementById('btnOpenSoundSettings')?.addEventListener('click', openSoundSettingsModal);
+
   // Tombol Buka Modal Tambah Agenda di Header
   document.getElementById('btnOpenAddModal')?.addEventListener('click', () => {
     window.openAddActivityModal();
   });
+}
+
+// ============================================================
+// PENGATURAN SUARA NOTIFIKASI ALARM
+// ============================================================
+async function openSoundSettingsModal() {
+  const modal = document.getElementById('modalSoundSettings');
+  const listContainer = document.getElementById('soundPresetsList');
+  const volumeSlider = document.getElementById('soundVolumeSlider');
+  const volumeLabel = document.getElementById('soundVolumeLabel');
+
+  if (!modal || !listContainer) return;
+
+  try {
+    const settings = await window.tempoAPI.getSettings();
+    const activeSound = settings.alertSound || 'tempo_chime';
+    const activeVol = (settings.alertVolume !== undefined ? settings.alertVolume : 0.8);
+
+    if (volumeSlider) {
+      volumeSlider.value = Math.round(activeVol * 100);
+    }
+    if (volumeLabel) {
+      volumeLabel.textContent = `${Math.round(activeVol * 100)}%`;
+    }
+
+    const presets = window.SoundEngine ? window.SoundEngine.presets : [];
+    listContainer.innerHTML = presets.map(p => `
+      <div class="sound-preset-card ${p.id === activeSound ? 'active' : ''}" data-sound-id="${p.id}" onclick="window.selectSoundPreset('${p.id}')">
+        <div class="preset-radio-indicator">
+          <input type="radio" name="soundPresetRadio" value="${p.id}" ${p.id === activeSound ? 'checked' : ''}>
+        </div>
+        <div class="preset-info">
+          <div class="preset-name-row">
+            <span class="preset-title">${p.name}</span>
+            <span class="preset-tag">${p.tag}</span>
+          </div>
+          <div class="preset-desc">${p.desc}</div>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm btn-preview-sound" onclick="event.stopPropagation(); window.previewSound('${p.id}')" title="Dengarkan Suara Ini">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          Tes Nada
+        </button>
+      </div>
+    `).join('');
+
+    modal.classList.remove('hidden');
+  } catch (err) {
+    console.error('Error opening sound settings:', err);
+  }
+}
+
+window.selectSoundPreset = (id) => {
+  document.querySelectorAll('.sound-preset-card').forEach(c => {
+    c.classList.toggle('active', c.getAttribute('data-sound-id') === id);
+  });
+  const radio = document.querySelector(`input[name="soundPresetRadio"][value="${id}"]`);
+  if (radio) radio.checked = true;
+};
+
+window.previewSound = (id) => {
+  const slider = document.getElementById('soundVolumeSlider');
+  const vol = slider ? Number(slider.value) / 100 : 0.8;
+  if (window.SoundEngine) {
+    window.SoundEngine.playSound(id, vol);
+  }
+};
+
+function setupSoundSettingsEvents() {
+  const modal = document.getElementById('modalSoundSettings');
+  const btnClose = document.getElementById('btnCloseSoundSettings');
+  const btnCancel = document.getElementById('btnCancelSoundSettings');
+  const btnSave = document.getElementById('btnSaveSoundSettings');
+  const slider = document.getElementById('soundVolumeSlider');
+  const label = document.getElementById('soundVolumeLabel');
+
+  const hide = () => modal?.classList.add('hidden');
+  if (btnClose) btnClose.onclick = hide;
+  if (btnCancel) btnCancel.onclick = hide;
+
+  if (slider) {
+    slider.oninput = (e) => {
+      const val = e.target.value;
+      if (label) label.textContent = `${val}%`;
+    };
+  }
+
+  if (btnSave) {
+    btnSave.onclick = async () => {
+      const checkedRadio = document.querySelector('input[name="soundPresetRadio"]:checked');
+      const selectedSound = checkedRadio ? checkedRadio.value : 'tempo_chime';
+      const selectedVolume = slider ? Number(slider.value) / 100 : 0.8;
+
+      await window.tempoAPI.updateSettings({
+        alertSound: selectedSound,
+        alertVolume: selectedVolume
+      });
+
+      // Tes bunyi singkat sebagai feedback
+      if (window.SoundEngine) {
+        window.SoundEngine.playSound(selectedSound, selectedVolume);
+      }
+
+      hide();
+      const preset = window.SoundEngine?.presets.find(p => p.id === selectedSound);
+      window.showCustomAlert(
+        'Preferensi Suara Disimpan',
+        `Nada alarm utama berhasil diatur ke:\n🎵 ${preset ? preset.name : selectedSound}\nVolume: ${Math.round(selectedVolume * 100)}%`
+      );
+    };
+  }
 }
 
 let editingActivityId = null;
@@ -239,6 +355,7 @@ function setupModalForm() {
   window.openAddActivityModal = () => {
     editingActivityId = null;
     form.reset();
+    if (document.getElementById('actAlertSound')) document.getElementById('actAlertSound').value = '';
     showModal(false);
   };
 
@@ -246,6 +363,7 @@ function setupModalForm() {
     editingActivityId = null;
     form.reset();
     document.getElementById('inputDueDate').value = dateStr;
+    if (document.getElementById('actAlertSound')) document.getElementById('actAlertSound').value = '';
     showModal(false);
   };
 
@@ -262,6 +380,9 @@ function setupModalForm() {
     document.getElementById('inputDueTime').value = act.dueTime || '15:00';
     document.getElementById('selectPriority').value = act.priority || 'normal';
     document.getElementById('inputCategory').value = act.category || 'Umum';
+    if (document.getElementById('actAlertSound')) {
+      document.getElementById('actAlertSound').value = act.alertSound || '';
+    }
 
     // Set horizon checkboxes
     const horizons = act.reminderHorizon || [];
@@ -296,6 +417,7 @@ function setupModalForm() {
       const priority = document.getElementById('selectPriority').value;
       const category = document.getElementById('inputCategory').value.trim() || 'Umum';
       const quickLink = document.getElementById('inputQuickLink').value.trim();
+      const alertSound = document.getElementById('actAlertSound')?.value || '';
 
       // Horizon checkboxes
       const horizonChecks = form.querySelectorAll('input[name="horizon"]:checked');
@@ -324,6 +446,7 @@ function setupModalForm() {
           category,
           reminderHorizon,
           dependencies,
+          alertSound,
           vault
         });
       } else {
@@ -342,6 +465,7 @@ function setupModalForm() {
           category,
           reminderHorizon,
           dependencies,
+          alertSound,
           vault,
           status: 'pending'
         });

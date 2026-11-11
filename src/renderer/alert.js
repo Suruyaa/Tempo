@@ -1,9 +1,10 @@
-// Audio Synthesizer via Web Audio API (Kebal Do Not Disturb & Offline-Ready)
-let audioCtx = null;
+// Audio Synthesizer via SoundEngine Web Audio API (Kebal Do Not Disturb & Offline-Ready)
 let soundInterval = null;
 let isMuted = false;
 let currentActivity = null;
 let currentReason = null;
+let currentSoundPreset = 'tempo_chime';
+let currentVolume = 0.8;
 
 // Anti-Procrastination puzzle state
 let currentAnswer = '';
@@ -12,32 +13,9 @@ let pendingAction = null; // 'snooze' atau 'dismiss'
 function playAlertChime() {
   if (isMuted) return;
   try {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if (!audioCtx) audioCtx = new AudioContext();
-
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
+    if (window.SoundEngine) {
+      window.SoundEngine.playSound(currentSoundPreset, currentVolume);
     }
-
-    const now = audioCtx.currentTime;
-    const notes = [880, 1318.5, 1108.7];
-    notes.forEach((freq, i) => {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, now + (i * 0.12));
-
-      gain.gain.setValueAtTime(0, now + (i * 0.12));
-      gain.gain.linearRampToValueAtTime(0.2, now + (i * 0.12) + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + (i * 0.12) + 0.35);
-
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-
-      osc.start(now + (i * 0.12));
-      osc.stop(now + (i * 0.12) + 0.4);
-    });
   } catch (err) {
     console.error('Audio synthesizer error:', err);
   }
@@ -62,6 +40,19 @@ window.tempoAPI.onAlertData((data) => {
 
   currentActivity = data.activity;
   currentReason = data.triggerReason;
+
+  // Tentukan preset suara yang digunakan (prioritas: agenda spesifik -> pengaturan global -> default)
+  if (currentActivity && currentActivity.alertSound) {
+    currentSoundPreset = currentActivity.alertSound;
+  } else if (data.settings && data.settings.alertSound) {
+    currentSoundPreset = data.settings.alertSound;
+  } else {
+    currentSoundPreset = 'tempo_chime';
+  }
+
+  if (data.settings && data.settings.alertVolume !== undefined) {
+    currentVolume = Number(data.settings.alertVolume) || 0.8;
+  }
 
   document.getElementById('alertTitle').textContent = currentActivity.title;
   document.getElementById('alertDesc').textContent = currentActivity.description || 'Tidak ada catatan tambahan.';

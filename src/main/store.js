@@ -9,6 +9,12 @@ const VAULT_DIR = path.join(DATA_DIR, 'vault');
 
 const SCRATCHPAD_FILE = path.join(DATA_DIR, 'scratchpad.json');
 const LOGBOOK_FILE = path.join(DATA_DIR, 'logbook.json');
+const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
+
+const DEFAULT_SETTINGS = {
+  alertSound: 'tempo_chime',
+  alertVolume: 0.8
+};
 
 // Pastikan direktori data dan vault ada
 if (!fs.existsSync(DATA_DIR)) {
@@ -72,6 +78,7 @@ class Store {
       reminderHorizon: activity.reminderHorizon || ['h-1', 'h-0'],
       dependencies: activity.dependencies || [],
       vault: activity.vault || { links: [], files: [] },
+      alertSound: activity.alertSound || '',
       createdAt: new Date().toISOString()
     };
     list.push(newActivity);
@@ -220,6 +227,30 @@ class Store {
     } catch (err) {
       console.error('[Store] Error saving scratchpad:', err);
       return false;
+    }
+  }
+
+  getSettings() {
+    try {
+      if (fs.existsSync(SETTINGS_FILE)) {
+        const raw = fs.readFileSync(SETTINGS_FILE, 'utf-8');
+        return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+      }
+    } catch (err) {
+      console.error('[Store] Error reading settings:', err);
+    }
+    return { ...DEFAULT_SETTINGS };
+  }
+
+  updateSettings(updates) {
+    try {
+      const current = this.getSettings();
+      const updated = { ...current, ...updates };
+      fs.writeFileSync(SETTINGS_FILE, JSON.stringify(updated, null, 2), 'utf-8');
+      return updated;
+    } catch (err) {
+      console.error('[Store] Error saving settings:', err);
+      return this.getSettings();
     }
   }
 

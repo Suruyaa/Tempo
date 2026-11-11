@@ -28,6 +28,10 @@ contextBridge.exposeInMainWorld('tempoAPI', {
   // Export ICS
   exportICS: () => ipcRenderer.invoke('export-ics'),
 
+  // Settings & Sound Preferences
+  getSettings: () => ipcRenderer.invoke('get-settings'),
+  updateSettings: (settings) => ipcRenderer.invoke('update-settings', settings),
+
   // Scratchpad
   getScratchpad: () => ipcRenderer.invoke('get-scratchpad'),
   saveScratchpad: (content) => ipcRenderer.invoke('save-scratchpad', content),

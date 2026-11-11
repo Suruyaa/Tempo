@@ -38,7 +38,15 @@ Notifikasi bawaan sistem operasi sering kali gagal menyelamatkan tenggat waktu k
 
 ### 2. Forced Notification Engine (Bypass Windows Do Not Disturb)
 - Memunculkan jendela darurat sekunder berstatus `alwaysOnTop: true, level: 'screen-saver'` di layer teratas layar Anda.
-- **Synthesizer Alarm Mandiri**: Bunyi peringatan dinamis dihasilkan secara langsung melalui Web Audio API tanpa memerlukan koneksi internet.
+- **Synthesizer Alarm Mandiri & 7 Pilihan Suara**: Bunyi peringatan dinamis dihasilkan secara langsung melalui Web Audio API offline tanpa koneksi internet. Pengguna dapat memilih, menguji, dan mengatur volume nada favorit dari menu *Suara Notifikasi*:
+  - 🔔 **Tempo Chime (Default)**: Kristal modern dengan akor 3 nada naik yang elegan dan jernih.
+  - 📡 **Radar Pulse**: Sonar radar dua nada turun berkarakter taktikal cyber/sci-fi.
+  - ⌚ **Digital Retro**: Bip-bip ganda arloji digital 80-an yang tajam dan nostalgia.
+  - 🪵 **Warm Marimba**: Petikan kayu pentatonik yang santai dan ramah di telinga.
+  - 🚨 **Siren Alarm**: Sirine bergetar cepat ekstrem untuk membongkar fokus yang menunda tugas.
+  - 🧘 **Zen Singing Bowl**: Dentang mangkuk meditasi 432Hz yang bergaung meditatif dan dalam.
+  - ⚡ **Space Ping**: Drop frekuensi laser arcade yang tajam dan futuristik.
+- **Kustomisasi Global & Khusus**: Nada dapat diatur secara global untuk seluruh alarm, atau disesuaikan khusus untuk agenda spesifik.
 - **Anti-Procrastination Math Challenge**: Untuk tugas berkategori *Mendesak (Urgent)* atau *Hari H*, tombol penunda/penutup alarm dilindungi oleh tantangan perhitungan matematika cepat untuk memaksa otak Anda sadar dan tidak menunda pekerjaan.
 - **One-Click Vault Access**: Akses instan ke draft dokumen kerja langsung dari popup notifikasi saat alarm berbunyi.
 

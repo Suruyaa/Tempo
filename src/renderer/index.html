@@ -142,6 +142,20 @@
             <span class="tool-desc">Format Standar .ICS</span>
           </div>
         </button>
+
+        <!-- Sound Settings Modal Button -->
+        <button id="btnOpenSoundSettings" class="tool-btn tool-secondary" title="Pilih &amp; Uji Coba Suara Notifikasi Alarm">
+          <span class="tool-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+          </span>
+          <div class="tool-info">
+            <span class="tool-title">Suara Notifikasi</span>
+            <span class="tool-desc">Pilihan 7 nada alarm</span>
+          </div>
+        </button>
       </div>
 
       <!-- Sidebar Footer -->
@@ -311,6 +325,21 @@
             <input type="url" id="inputQuickLink" placeholder="https://docs.google.com/...">
             <small class="form-hint">Bisa langsung dibuka dari popup notifikasi saat alert berbunyi.</small>
           </div>
+
+          <div class="form-group">
+            <label for="actAlertSound">Suara Alarm Notifikasi Khusus (Opsional)</label>
+            <select id="actAlertSound">
+              <option value="">Gunakan Suara Pengaturan Global (Default)</option>
+              <option value="tempo_chime">Tempo Chime (Modern Crystal)</option>
+              <option value="radar_pulse">Radar Pulse (Cyber Sci-Fi)</option>
+              <option value="digital_retro">Digital Retro (Casio Bip-Bip)</option>
+              <option value="marimba">Warm Marimba (Akustik Lembut)</option>
+              <option value="siren_alarm">Siren Alarm (Darurat Ekstrem)</option>
+              <option value="zen_bell">Zen Singing Bowl (432Hz Gong)</option>
+              <option value="space_drop">Space Ping (Arcade Laser)</option>
+            </select>
+            <small class="form-hint">Khusus agenda ini jika ingin nada alarm berbeda.</small>
+          </div>
         </div>
 
         <!-- MODAL FOOTER BUTTONS -->
@@ -319,6 +348,54 @@
           <button type="submit" class="btn btn-primary btn-glow">Simpan Agenda</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL PENGATURAN SUARA NOTIFIKASI ALARM -->
+  <div id="modalSoundSettings" class="modal-backdrop hidden">
+    <div class="modal-card modal-sound-settings">
+      <div class="modal-header">
+        <h3 class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          Pilih Suara Notifikasi Alarm
+        </h3>
+        <button class="btn-close-modal" id="btnCloseSoundSettings">&times;</button>
+      </div>
+
+      <div class="sound-settings-body">
+        <p style="font-size: 13px; color: var(--text-dim); margin-bottom: 16px;">
+          Pilih profil bunyi synthesizer Web Audio API lokal yang akan berbunyi saat alarm tenggat waktu atau notifikasi paksa berbunyi:
+        </p>
+
+        <!-- Daftar Pilihan Suara -->
+        <div id="soundPresetsList" class="sound-presets-list">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Pengaturan Volume -->
+        <div class="sound-volume-slider-row">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+            <span style="font-size: 13px; font-weight: 700; color: #fff;">Volume Alarm</span>
+          </div>
+          <input type="range" id="soundVolumeSlider" min="20" max="100" value="80" style="flex: 1; cursor: pointer;">
+          <span id="soundVolumeLabel" style="font-size: 12px; font-weight: 800; color: var(--accent-cyan); min-width: 45px; text-align: right;">80%</span>
+        </div>
+      </div>
+
+      <div class="modal-actions-full" style="margin-top: 20px;">
+        <button type="button" class="btn btn-secondary" id="btnCancelSoundSettings">Batal</button>
+        <button type="button" class="btn btn-primary btn-glow" id="btnSaveSoundSettings">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+          Simpan Preferensi Suara
+        </button>
+      </div>
     </div>
   </div>
 
@@ -343,6 +420,7 @@
   </div>
 
   <!-- SCRIPTS -->
+  <script src="soundEngine.js"></script>
   <script src="components/agendaView.js"></script>
   <script src="components/calendarView.js"></script>
   <script src="components/nodeGraph.js"></script>
